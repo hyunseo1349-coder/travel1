@@ -56,14 +56,6 @@ const IcoAlt = () => (
 
 // ─── 상세 패널 ───────────────────────────────────────────────────────────────
 function DetailPanel({ item }) {
-  const hasAny = item.detail || item.tip || item.link || item.alt;
-  if (!hasAny) {
-    return (
-      <p style={{ fontSize: '12px', color: '#aaa', fontStyle: 'italic', padding: '4px 0 8px' }}>
-        추가 정보가 없어요
-      </p>
-    );
-  }
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', paddingBottom: '4px' }}>
       <DetailRow icon={<IcoDoc />}  label="상세 내용"  value={item.detail} />
@@ -114,9 +106,9 @@ export default function ScheduleItem({ item, index, isLast }) {
             overflow: 'hidden',
           }}
         >
-          {/* 카드 헤더 (탭하면 펼침) */}
+          {/* 카드 헤더 (추가 정보 있을 때만 탭 가능) */}
           <button
-            onClick={() => setExpanded(e => !e)}
+            onClick={() => hasExtra && setExpanded(e => !e)}
             style={{
               width: '100%',
               padding: '14px 14px 14px 14px',
@@ -125,7 +117,7 @@ export default function ScheduleItem({ item, index, isLast }) {
               gap: '12px',
               background: 'none',
               border: 'none',
-              cursor: 'pointer',
+              cursor: hasExtra ? 'pointer' : 'default',
               textAlign: 'left',
             }}
           >
@@ -182,19 +174,21 @@ export default function ScheduleItem({ item, index, isLast }) {
               )}
             </div>
 
-            {/* 화살표 / 닫기 표시 */}
-            <div
-              style={{
-                flexShrink: 0,
-                color: hasExtra ? '#436440' : '#d1d5db',
-                transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
-                transition: 'transform 0.2s',
-              }}
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M9 18l6-6-6-6" />
-              </svg>
-            </div>
+            {/* 화살표: 추가 정보 있을 때만 표시 */}
+            {hasExtra && (
+              <div
+                style={{
+                  flexShrink: 0,
+                  color: '#436440',
+                  transform: expanded ? 'rotate(90deg)' : 'rotate(0deg)',
+                  transition: 'transform 0.2s',
+                }}
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </div>
+            )}
           </button>
 
           {/* 펼쳐지는 상세 패널 */}
