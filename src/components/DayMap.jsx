@@ -29,9 +29,11 @@ async function geocode(query) {
   return null;
 }
 
-// 위치 추출: 장소 컬럼 우선, 없으면 null (빈칸이면 건너뜀)
+// 위치 추출: 장소 컬럼 우선 → 기본 내용 폴백 → 없으면 null
 function extractLocation(item) {
-  return (item.location || '').trim() || null;
+  return (item.location || '').trim()
+      || (item.content  || '').trim()
+      || null;
 }
 
 // Google Maps Directions URL 생성
@@ -224,7 +226,7 @@ export default function DayMap({ items }) {
       ) : noLocations ? (
         <div style={{ height: 140, display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: '#f8faf8' }}>
           <p style={{ fontSize: '12px', color: '#9ca3af', textAlign: 'center', padding: '0 24px' }}>
-            위치 정보를 찾을 수 없어요.<br />일정의 기본 내용에 장소명을 입력해 주세요.
+            위치 정보를 찾을 수 없어요.<br />구글 시트 <b>장소</b> 열에 장소명을 입력해 주세요.
           </p>
         </div>
       ) : waypoints.length === 0 ? null : (

@@ -69,7 +69,7 @@ function DayHeader({ day, onPrev, onNext, hasPrev, hasNext }) {
           fontSize: '24px', fontWeight: 700, letterSpacing: '-0.01em',
           color: '#111827', margin: '4px 0 0', wordBreak: 'keep-all', lineHeight: 1.3,
         }}>
-          {day.theme || `${day.seqNumber}일차 일정`}
+          {`${day.seqNumber}일차 일정`}
         </h1>
       </div>
       <div style={{ display: 'flex', gap: '4px', marginTop: '6px', flexShrink: 0 }}>

@@ -30,6 +30,14 @@ function parseCSV(text) {
 // ─── 달력 날짜 파싱 + 요일 계산 ─────────────────────────────────────────────
 const KO_DAY_SHORT = ['일', '월', '화', '수', '목', '금', '토'];
 
+// 연도 없을 때 현재/내년 추론 (60일 이상 지난 날짜면 내년으로)
+function inferYear(month, day) {
+  const now  = new Date();
+  const year = now.getFullYear();
+  const diff = (new Date(year, month - 1, day) - now) / 86400000;
+  return diff < -60 ? year + 1 : year;
+}
+
 export function parseCalendarDate(raw) {
   if (!raw) return null;
   let m;
@@ -40,17 +48,25 @@ export function parseCalendarDate(raw) {
     const [, y, mo, d] = m.map(Number);
     return { year: y, month: mo, day: d, dayOfWeek: KO_DAY_SHORT[new Date(y, mo - 1, d).getDay()] };
   }
+  // M/D/YYYY 또는 MM/DD/YYYY (Google Sheets 미국 형식)
+  m = raw.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+  if (m) {
+    const [, mo, d, y] = m.map(Number);
+    return { year: y, month: mo, day: d, dayOfWeek: KO_DAY_SHORT[new Date(y, mo - 1, d).getDay()] };
+  }
   // N월 M일
   m = raw.match(/(\d{1,2})월\s*(\d{1,2})일/);
   if (m) {
     const [, mo, d] = m.map(Number);
-    return { month: mo, day: d };
+    const y = inferYear(mo, d);
+    return { year: y, month: mo, day: d, dayOfWeek: KO_DAY_SHORT[new Date(y, mo - 1, d).getDay()] };
   }
   // MM/DD 또는 M/D
   m = raw.match(/^(\d{1,2})\/(\d{1,2})$/);
   if (m) {
     const [, mo, d] = m.map(Number);
-    return { month: mo, day: d };
+    const y = inferYear(mo, d);
+    return { year: y, month: mo, day: d, dayOfWeek: KO_DAY_SHORT[new Date(y, mo - 1, d).getDay()] };
   }
   return null;
 }
@@ -88,7 +104,7 @@ function findColIndex(headers, candidates) {
 // ─── 상세 필드 정의 (label, 탐색 키워드, 타입) ──────────────────────────────
 // 이 순서는 "폴백 순서"이며 실제 표시는 시트 컬럼 순서를 따름
 const DETAIL_FIELD_DEFS = [
-  { key: 'content', label: '기본 내용', candidates: ['기본내용','기본 내용','내용','장소','위치','location','description'], type: 'text' },
+  { key: 'content', label: '기본 내용', candidates: ['기본내용','기본 내용','내용','description'], type: 'text' },
   { key: 'detail',  label: '상세 내용', candidates: ['상세내용','상세 내용','상세','detail','세부내용','세부 내용'],             type: 'text' },
   { key: 'tip',     label: '팁',       candidates: ['팁','tip','tips','조언'],                                                  type: 'text' },
   { key: 'link',    label: '참고 링크', candidates: ['참고링크','참고 링크','link','url','링크'],                               type: 'link' },
@@ -166,8 +182,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
           // 요일: parsedDate에서 계산된 것 우선, 없으면 raw 문자열에서 추출
           const dayShort = parsedDate?.dayOfWeek || extractDayName(key);
           const its      = grouped[key];
-          const theme    = its[0]?.schedule || '';
-          return { key, seqNumber: idx + 1, parsedDate, dayShort, theme, items: its };
+          return { key, seqNumber: idx + 1, parsedDate, dayShort, items: its };
         });
 
         if (!cancelled) setDays(dayList);
