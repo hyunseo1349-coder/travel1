@@ -2,21 +2,21 @@ import { useState, useRef } from 'react';
 import { getActivityIcon, getIconByName, ICON_CATALOG } from './ActivityIcon.jsx';
 import PhotoCropper from './PhotoCropper.jsx';
 
-// ─── 카테고리별 그라디언트 + picsum 시드 ────────────────────────────────────
-const CATEGORY_META = {
-  dining:   { gradient: 'linear-gradient(135deg,#f6d365 0%,#fda085 100%)', seed: 'food-restaurant-meal' },
-  temple:   { gradient: 'linear-gradient(135deg,#667eea 0%,#764ba2 100%)', seed: 'temple-shrine-asia'   },
-  museum:   { gradient: 'linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%)', seed: 'museum-art-gallery'   },
-  tea:      { gradient: 'linear-gradient(135deg,#b2d8b2 0%,#3d9970 100%)', seed: 'cafe-tea-coffee'      },
-  shopping: { gradient: 'linear-gradient(135deg,#f093fb 0%,#f5576c 100%)', seed: 'market-shopping'      },
-  hotel:    { gradient: 'linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)', seed: 'hotel-interior'       },
-  flight:   { gradient: 'linear-gradient(135deg,#43e97b 0%,#38f9d7 100%)', seed: 'airport-airplane'     },
-  train:    { gradient: 'linear-gradient(135deg,#fa709a 0%,#fee140 100%)', seed: 'train-railway-travel' },
-  beach:    { gradient: 'linear-gradient(135deg,#30cfd0 0%,#330867 100%)', seed: 'beach-ocean-sea'      },
-  walk:     { gradient: 'linear-gradient(135deg,#a8edea 0%,#fed6e3 100%)', seed: 'street-walk-city'     },
-  nature:   { gradient: 'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)', seed: 'forest-nature-green'  },
-  camera:   { gradient: 'linear-gradient(135deg,#f7971e 0%,#ffd200 100%)', seed: 'landmark-sightseeing' },
-  pin:      { gradient: 'linear-gradient(135deg,#96fbc4 0%,#f9f586 100%)', seed: 'travel-destination'   },
+// ─── 카테고리별 폴백 그라디언트 (Unsplash 실패 시) ─────────────────────────
+const FALLBACK_GRADIENTS = {
+  dining:   'linear-gradient(135deg,#f6d365 0%,#fda085 100%)',
+  temple:   'linear-gradient(135deg,#667eea 0%,#764ba2 100%)',
+  museum:   'linear-gradient(135deg,#a18cd1 0%,#fbc2eb 100%)',
+  tea:      'linear-gradient(135deg,#b2d8b2 0%,#3d9970 100%)',
+  shopping: 'linear-gradient(135deg,#f093fb 0%,#f5576c 100%)',
+  hotel:    'linear-gradient(135deg,#4facfe 0%,#00f2fe 100%)',
+  flight:   'linear-gradient(135deg,#43e97b 0%,#38f9d7 100%)',
+  train:    'linear-gradient(135deg,#fa709a 0%,#fee140 100%)',
+  beach:    'linear-gradient(135deg,#30cfd0 0%,#330867 100%)',
+  walk:     'linear-gradient(135deg,#a8edea 0%,#fed6e3 100%)',
+  nature:   'linear-gradient(135deg,#11998e 0%,#38ef7d 100%)',
+  camera:   'linear-gradient(135deg,#f7971e 0%,#ffd200 100%)',
+  pin:      'linear-gradient(135deg,#96fbc4 0%,#f9f586 100%)',
 };
 
 function getCategory(scheduleName, content) {
@@ -34,6 +34,12 @@ function getCategory(scheduleName, content) {
   if (['공원','정원','숲','자연','mountain','forest','nature'].some(k => text.includes(k))) return 'nature';
   if (['사진','관광','photo','sightseeing'].some(k => text.includes(k))) return 'camera';
   return 'pin';
+}
+
+// 일정명 + 장소 → Unsplash 검색 키워드
+function buildPhotoQuery(schedule, content) {
+  const q = [schedule, content].filter(Boolean).join(' ');
+  return encodeURIComponent(q.slice(0, 80));
 }
 
 // localStorage 키 (사진 저장)
@@ -81,15 +87,16 @@ function FieldRow({ field }) {
 
 // ─── 메인 컴포넌트 ───────────────────────────────────────────────────────────
 export default function DetailPage({ item, onBack }) {
-  const category  = getCategory(item.schedule, item.content);
-  const meta      = CATEGORY_META[category] || CATEGORY_META.pin;
+  const category     = getCategory(item.schedule, item.content);
+  const fallbackGrad = FALLBACK_GRADIENTS[category] || FALLBACK_GRADIENTS.pin;
 
-  const [customPhoto,  setCustomPhoto]  = useState(() => loadPhoto(item.id));
-  const [cropFile,     setCropFile]     = useState(null);
-  const [imgError,     setImgError]     = useState(false);
+  const [customPhoto, setCustomPhoto] = useState(() => loadPhoto(item.id));
+  const [cropFile,    setCropFile]    = useState(null);
+  const [imgError,    setImgError]    = useState(false);
   const fileInputRef = useRef();
 
-  const autoPhotoUrl = `https://picsum.photos/seed/${meta.seed}/800/450`;
+  // 일정명+장소 기반 Unsplash 키워드 검색 사진
+  const autoPhotoUrl = `https://source.unsplash.com/featured/800x450?${buildPhotoQuery(item.schedule, item.content)}`;
 
   const handleFileChange = e => {
     const file = e.target.files?.[0];
@@ -108,7 +115,8 @@ export default function DetailPage({ item, onBack }) {
   const timeLabel = timeParts.length >= 2 ? `${timeParts[0]} → ${timeParts[timeParts.length - 1]}` : (timeParts[0] || '');
 
   // orderedFields에서 content 제외 (카드 부제목으로 이미 표시)
-  const hasAnyField = item.orderedFields?.some(f => f.value);
+  // 기본 내용(content) 제외하고 나머지에 값 있는지 확인
+  const hasAnyField = item.orderedFields?.some(f => f.key !== 'content' && f.value);
 
   return (
     <>
@@ -164,9 +172,9 @@ export default function DetailPage({ item, onBack }) {
               onError={() => setImgError(true)}
             />
           ) : (
-            /* 사진 로드 실패 시 그라디언트 */
-            <div style={{ width: '100%', height: '100%', background: meta.gradient, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <span style={{ fontSize: '48px', opacity: 0.7 }}>📍</span>
+            /* 사진 로드 실패 시 카테고리 그라디언트 */
+            <div style={{ width: '100%', height: '100%', background: fallbackGrad, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <span style={{ fontSize: '48px', opacity: 0.6 }}>📍</span>
             </div>
           )}
         </div>
@@ -201,10 +209,20 @@ export default function DetailPage({ item, onBack }) {
           <div style={{ height: 1, backgroundColor: '#f0f0ee', margin: '16px 0 0' }} />
         </div>
 
-        {/* ── 상세 필드 (시트 열 순서) ── */}
+        {/* ── 상세 필드 (시트 열 순서, 기본 내용 제외) ── */}
         <div style={{ backgroundColor: '#fff', padding: '0 20px 32px' }}>
           {hasAnyField ? (
-            item.orderedFields?.map(field => <FieldRow key={field.key} field={field} />)
+            item.orderedFields
+              ?.filter(f => f.key !== 'content')          // 기본 내용 제외
+              .map(field => (
+                <FieldRow
+                  key={field.key}
+                  field={field.key === 'detail'
+                    ? { ...field, label: '설명' }          // 상세 내용 → 설명
+                    : field
+                  }
+                />
+              ))
           ) : (
             <p style={{ color: '#9ca3af', fontSize: '14px', paddingTop: '24px', textAlign: 'center' }}>
               추가 정보가 없어요

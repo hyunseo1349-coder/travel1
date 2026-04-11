@@ -56,7 +56,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
             backgroundColor: '#fff', borderRadius: '18px',
             boxShadow: '0 2px 12px rgba(67,100,64,0.07)', overflow: 'hidden',
           }}>
-            <div style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+            <div style={{ padding: '12px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
 
               {/* 아이콘 원 — 탭하면 피커 (뱃지 없음) */}
               <div
@@ -65,7 +65,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
                   flexShrink: 0, width: 42, height: 42, borderRadius: '13px',
                   backgroundColor: '#f2f6f2', color: '#436440',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer',
+                  cursor: 'pointer', marginTop: '1px',
                 }}
               >
                 <IconComponent />
@@ -88,8 +88,8 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
                 {hasContent && (
                   <p style={{
                     fontSize: '11px', marginTop: '2px', color: '#94a3a4',
-                    textTransform: 'uppercase', letterSpacing: '0.05em',
-                    overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', margin: '2px 0 0',
+                    letterSpacing: '0.03em', margin: '3px 0 0',
+                    wordBreak: 'keep-all', whiteSpace: 'normal', lineHeight: '1.45',
                   }}>
                     {item.content}
                   </p>
