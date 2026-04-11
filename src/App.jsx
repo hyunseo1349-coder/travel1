@@ -35,7 +35,7 @@ function AppBar() {
             letterSpacing: '-0.01em',
           }}
         >
-          The Journey
+          Daily Schedule
         </span>
       </div>
 
