@@ -134,6 +134,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
 
         // 기본 컬럼
         const iDate = findColIndex(headers, ['날짜','일자','일차','day','date']);
+        const iDow  = findColIndex(headers, ['요일','day of week','dayofweek','weekday']);
         const iTime = findColIndex(headers, ['시간','time']);
         const iSch  = findColIndex(headers, ['일정','일정명','schedule','activity','활동']);
         const iLoc  = findColIndex(headers, ['장소','위치','place','location','venue']);
@@ -158,6 +159,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
           return {
             id:            idx,
             date:          get(row, iDate),
+            dow:           get(row, iDow),   // 요일 열 (토, 일 등)
             time:          get(row, iTime),
             schedule:      get(row, iSch),
             location:      get(row, iLoc),   // 장소 (지도용)
@@ -180,8 +182,10 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
         const dayList = order.map((key, idx) => {
           const parsedDate = parseCalendarDate(key);
           // 요일: parsedDate에서 계산된 것 우선, 없으면 raw 문자열에서 추출
-          const dayShort = parsedDate?.dayOfWeek || extractDayName(key);
           const its      = grouped[key];
+          // 요일: 시트 요일 열 → parsedDate 계산값 → raw 문자열 추출 순
+          const sheetDow = its[0]?.dow ? extractDayName(its[0].dow) : '';
+          const dayShort = sheetDow || parsedDate?.dayOfWeek || extractDayName(key);
           return { key, seqNumber: idx + 1, parsedDate, dayShort, items: its };
         });
 
