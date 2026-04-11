@@ -29,11 +29,9 @@ async function geocode(query) {
   return null;
 }
 
-// 위치 추출: content 필드에서 장소명 추출 (일정명도 보조로 사용)
+// 위치 추출: 장소 컬럼 우선, 없으면 null (빈칸이면 건너뜀)
 function extractLocation(item) {
-  const text = (item.content || '').trim();
-  if (text) return text;
-  return item.schedule || '';
+  return (item.location || '').trim() || null;
 }
 
 // Google Maps Directions URL 생성
@@ -71,17 +69,19 @@ export default function DayMap({ items }) {
       setNoLocations(false);
 
       const results = [];
+      let requestMade = false;
       for (let i = 0; i < items.length; i++) {
         if (cancelled) return;
         const item  = items[i];
         const query = extractLocation(item);
-        if (!query) continue;
+        if (!query) continue;   // 장소 빈칸이면 건너뜀
 
+        if (requestMade) await sleep(1050); // Nominatim rate limit (1 req/sec)
         const coord = await geocode(query);
+        requestMade = true;
         if (coord) {
           results.push({ ...coord, label: item.schedule || query, index: results.length });
         }
-        if (i < items.length - 1) await sleep(1050); // Nominatim rate limit
       }
 
       if (!cancelled) {
