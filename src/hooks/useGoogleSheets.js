@@ -90,11 +90,15 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
 
         const headers = rows[0];
 
-        // 컬럼 인덱스 탐색
+        // 컬럼 인덱스 탐색 — 실제 헤더명 우선, fallback으로 유사어 지원
         const iDate     = findColIndex(headers, ['날짜', '일자', '일차', 'day', 'date']);
         const iTime     = findColIndex(headers, ['시간', 'time']);
-        const iSchedule = findColIndex(headers, ['일정명', '일정', 'schedule', 'activity', '활동']);
-        const iContent  = findColIndex(headers, ['기본내용', '내용', '장소', '위치', 'location', 'description', '세부']);
+        const iSchedule = findColIndex(headers, ['일정', '일정명', 'schedule', 'activity', '활동']);
+        const iContent  = findColIndex(headers, ['기본내용', '기본 내용', '내용', '장소', '위치', 'location', 'description']);
+        const iDetail   = findColIndex(headers, ['상세내용', '상세 내용', '상세', 'detail', '세부내용', '세부 내용']);
+        const iTip      = findColIndex(headers, ['팁', 'tip', 'tips', '조언', '참고사항']);
+        const iLink     = findColIndex(headers, ['참고링크', '참고 링크', 'link', 'url', '링크', '참고']);
+        const iAlt      = findColIndex(headers, ['대체일정', '대체 일정', '대안', 'alternative', 'alt']);
         const iTheme    = findColIndex(headers, ['테마', '테마명', '지역', '도시', 'theme', 'city', 'region']);
 
         // 데이터 행 파싱
@@ -104,7 +108,11 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
           time:     iTime     >= 0 ? row[iTime]     : '',
           schedule: iSchedule >= 0 ? row[iSchedule] : '',
           content:  iContent  >= 0 ? row[iContent]  : '',
-          theme:    iTheme    >= 0 ? row[iTheme]    : '',
+          detail:   iDetail   >= 0 ? row[iDetail]   : '',
+          tip:      iTip      >= 0 ? row[iTip]       : '',
+          link:     iLink     >= 0 ? row[iLink]      : '',
+          alt:      iAlt      >= 0 ? row[iAlt]       : '',
+          theme:    iTheme    >= 0 ? row[iTheme]     : '',
           raw:      row,
         })).filter(item => item.schedule || item.time);
 
