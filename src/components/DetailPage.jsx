@@ -36,10 +36,23 @@ function getCategory(scheduleName, content) {
   return 'pin';
 }
 
-function buildPhotoQuery(schedule, content) {
-  const q = [schedule, content].filter(Boolean).join(' ');
-  return encodeURIComponent(q.slice(0, 80));
-}
+// ─── 카테고리별 curated Unsplash 사진 ID ──────────────────────────────────────
+// source.unsplash.com 은 deprecated → images.unsplash.com 직접 ID 사용
+const CATEGORY_PHOTOS = {
+  dining:   'photo-1414235077428-338989a2e8c0', // restaurant table
+  temple:   'photo-1518998053901-5348d3961a04', // cathedral/temple
+  museum:   'photo-1512699355324-f07e3106dae5', // museum hall
+  tea:      'photo-1495474472287-4d71bcdd2085', // coffee / cafe
+  shopping: 'photo-1441986300917-64674bd600d8', // market street
+  hotel:    'photo-1566073771259-6a8506099945', // hotel pool view
+  flight:   'photo-1436491865332-7a61a109cc05', // airplane sky
+  train:    'photo-1474487548417-781cb6d646a9', // scenic train
+  beach:    'photo-1507525428034-b723cf961d3e', // tropical beach
+  walk:     'photo-1441974231531-c6227db76b6e', // forest path
+  nature:   'photo-1469474968028-56623f02e42e', // mountain lake
+  camera:   'photo-1502602898657-3e91760cbb34', // Paris / Eiffel
+  pin:      'photo-1476514525535-07fb3b4ae5f1', // travel cityscape
+};
 
 // ─── localStorage: 사진 ──────────────────────────────────────────────────────
 const PHOTO_KEY = 'journey-photos';
@@ -208,8 +221,9 @@ export default function DetailPage({ item, onBack }) {
     } catch {}
   };
 
-  // 일정명+장소 기반 Unsplash 키워드 검색 사진
-  const autoPhotoUrl = `https://source.unsplash.com/featured/800x450?${buildPhotoQuery(item.schedule, item.content)}`;
+  // 카테고리 기반 curated 사진
+  const photoId    = CATEGORY_PHOTOS[category] || CATEGORY_PHOTOS.pin;
+  const autoPhotoUrl = `https://images.unsplash.com/${photoId}?w=800&h=450&fit=crop&q=80`;
 
   const handleFileChange = e => {
     const file = e.target.files?.[0];
