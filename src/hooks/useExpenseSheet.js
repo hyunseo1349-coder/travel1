@@ -105,13 +105,23 @@ function extractRates(rows) {
   return rates;
 }
 
+// ─── 오프라인 캐시 ────────────────────────────────────────────────────────────
+function expCacheKey(id, gid) { return `journey-expense-${id}-${gid}`; }
+function loadExpCache(id, gid) {
+  try { return JSON.parse(localStorage.getItem(expCacheKey(id, gid))) || null; } catch { return null; }
+}
+function saveExpCache(id, gid, data) {
+  try { localStorage.setItem(expCacheKey(id, gid), JSON.stringify(data)); } catch {}
+}
+
 // ─── 메인 훅 ─────────────────────────────────────────────────────────────────
 export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
-  const [expenses,   setExpenses]   = useState([]);
-  const [rates,      setRates]      = useState({ KRW:1, USD:1380, EUR:1500, CHF:1550, JPY:9.5 });
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [expenses,  setExpenses]  = useState([]);
+  const [rates,     setRates]     = useState({ KRW:1, USD:1380, EUR:1500, CHF:1550, JPY:9.5 });
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState(null);
+  const [fromCache, setFromCache] = useState(false);
+  const [refreshKey,setRefreshKey]= useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -188,9 +198,15 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
           })
           .filter(e => e && (e.item || e.date || e.city) && e.amountKRW >= 0);
 
-        if (!cancelled) { setExpenses(data); setRates(mergedRates); }
+        saveExpCache(sheetId, gid, { expenses: data, rates: mergedRates });
+        if (!cancelled) { setExpenses(data); setRates(mergedRates); setFromCache(false); }
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          const cached = loadExpCache(sheetId, gid);
+          if (cached?.expenses?.length) {
+            setExpenses(cached.expenses); setRates(cached.rates || rates); setFromCache(true);
+          } else setError(err.message);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -198,5 +214,5 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
     return () => { cancelled = true; };
   }, [sheetId, gid, refreshKey]);
 
-  return { expenses, rates, loading, error, refetch: () => setRefreshKey(k => k+1) };
+  return { expenses, rates, loading, error, fromCache, refetch: () => setRefreshKey(k => k+1) };
 }

@@ -113,12 +113,22 @@ const DETAIL_FIELD_DEFS = [
   { key: 'note',    label: '기록',     candidates: ['기록','메모','노트','note','memo','journal','diary'],                      type: 'text' },
 ];
 
+// ─── 오프라인 캐시 ────────────────────────────────────────────────────────────
+function sheetCacheKey(id, gid) { return `journey-sheet-${id}-${gid}`; }
+function loadSheetCache(id, gid) {
+  try { return JSON.parse(localStorage.getItem(sheetCacheKey(id, gid))) || null; } catch { return null; }
+}
+function saveSheetCache(id, gid, data) {
+  try { localStorage.setItem(sheetCacheKey(id, gid), JSON.stringify(data)); } catch {}
+}
+
 // ─── 메인 훅 ────────────────────────────────────────────────────────────────
 export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
-  const [days,       setDays]       = useState([]);
-  const [loading,    setLoading]    = useState(true);
-  const [error,      setError]      = useState(null);
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [days,      setDays]      = useState([]);
+  const [loading,   setLoading]   = useState(true);
+  const [error,     setError]     = useState(null);
+  const [fromCache, setFromCache] = useState(false);
+  const [refreshKey,setRefreshKey]= useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -192,9 +202,14 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
           return { key, seqNumber: idx + 1, parsedDate, dayShort, items: its };
         });
 
-        if (!cancelled) setDays(dayList);
+        saveSheetCache(sheetId, gid, dayList);
+        if (!cancelled) { setDays(dayList); setFromCache(false); }
       } catch (err) {
-        if (!cancelled) setError(err.message);
+        if (!cancelled) {
+          const cached = loadSheetCache(sheetId, gid);
+          if (cached?.length) { setDays(cached); setFromCache(true); }
+          else setError(err.message);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -203,5 +218,5 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
     return () => { cancelled = true; };
   }, [sheetId, gid, refreshKey]);
 
-  return { days, loading, error, refetch: () => setRefreshKey(k => k+1) };
+  return { days, loading, error, fromCache, refetch: () => setRefreshKey(k => k+1) };
 }

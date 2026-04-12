@@ -199,28 +199,24 @@ export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
   // item이 바뀌면 저장된 편집값 재로드
   useEffect(() => { setFieldEdits(loadEdits(editKey)); }, [editKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
+  const [syncStatus, setSyncStatus] = useState(null); // null | 'saving' | 'saved'
+
   const handleSaveField = async (fieldKey, value) => {
     const newEdits = { ...fieldEdits, [fieldKey]: value };
     setFieldEdits(newEdits);
     saveEdits(editKey, newEdits);
-    // 구글 시트 동기화 (scriptUrl이 설정된 경우에만)
-    if (!scriptUrl) return;
-    try {
-      // no-cors 모드: Content-Type 헤더 없이 보내야 preflight 없이 전송됨
-      await fetch(scriptUrl, {
-        method: 'POST',
-        mode: 'no-cors',
-        body: JSON.stringify({
-          action: 'updateSchedule',
-          sheetId,
-          gid,
-          date: item.date,
-          schedule: item.schedule,
-          fieldKey,
-          value,
-        }),
-      });
-    } catch {}
+    setSyncStatus('saving');
+    if (scriptUrl) {
+      try {
+        await fetch(scriptUrl, {
+          method: 'POST',
+          mode: 'no-cors',
+          body: JSON.stringify({ action:'updateSchedule', sheetId, gid, date:item.date, schedule:item.schedule, fieldKey, value }),
+        });
+      } catch {}
+    }
+    setSyncStatus('saved');
+    setTimeout(() => setSyncStatus(null), 2000);
   };
 
   // 카테고리 기반 curated 사진
@@ -329,6 +325,16 @@ export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
                   {timeLabel}
                 </p>
               )}
+              {item.location && (
+                <a
+                  href={`https://maps.google.com/maps?q=${encodeURIComponent(item.location)}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ display:'inline-flex', alignItems:'center', gap:'4px', marginTop:'6px', padding:'4px 10px', borderRadius:'999px', backgroundColor:'var(--ci, #edf4ec)', textDecoration:'none', color:'var(--cp, #436440)', fontSize:'12px', fontWeight:500 }}
+                >
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
+                  {item.location}
+                </a>
+              )}
             </div>
           </div>
 
@@ -362,6 +368,31 @@ export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
           onConfirm={handleCropConfirm}
           onCancel={() => setCropFile(null)}
         />
+      )}
+
+      {/* 동기화 상태 토스트 */}
+      {syncStatus && (
+        <div style={{
+          position:'absolute', bottom:24, left:'50%', transform:'translateX(-50%)',
+          backgroundColor:'#1f2937', color:'#fff', borderRadius:'999px',
+          padding:'8px 18px', fontSize:'13px', fontWeight:500,
+          display:'flex', alignItems:'center', gap:'7px',
+          boxShadow:'0 4px 16px rgba(0,0,0,0.18)', zIndex:50,
+          whiteSpace:'nowrap',
+          animation:'fadeIn 0.15s ease',
+        }}>
+          {syncStatus === 'saving' ? (
+            <>
+              <div style={{ width:13, height:13, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.3)', borderTopColor:'#fff', animation:'spin 0.7s linear infinite' }} />
+              저장 중...
+            </>
+          ) : (
+            <>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              저장됨
+            </>
+          )}
+        </div>
       )}
     </>
   );

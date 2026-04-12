@@ -454,7 +454,7 @@ function ErrorState({ message }) {
 
 // ─── 메인 ────────────────────────────────────────────────────────────────────
 export default function BudgetTab({ sheetId, expenseGid, active }) {
-  const { expenses, rates, loading, error, refetch } = useExpenseSheet(sheetId, expenseGid);
+  const { expenses, rates, loading, error, fromCache, refetch } = useExpenseSheet(sheetId, expenseGid);
   const [manualList,   setManualList]   = useState(loadManual);
   const [catOverrides, setCatOverrides] = useState(loadCatOverrides);
   const [catFilter,    setCatFilter]    = useState('ALL');
@@ -490,6 +490,13 @@ export default function BudgetTab({ sheetId, expenseGid, active }) {
 
   return (
     <div ref={scrollRef} style={{ flex:1, overflowY:'auto', backgroundColor:'#fafaf8' }} className="scrollbar-hide">
+      {/* 오프라인 배너 */}
+      {fromCache && (
+        <div style={{ backgroundColor:'#fef3c7', padding:'6px 20px', fontSize:'11px', fontWeight:500, color:'#92400e', display:'flex', alignItems:'center', gap:'6px' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+          오프라인 · 마지막으로 저장된 데이터를 표시 중
+        </div>
+      )}
       {/* Pull-to-refresh 인디케이터 */}
       {(pullDist > 0 || refreshing) && (
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden', backgroundColor:'#fafaf8', flexShrink:0 }}>

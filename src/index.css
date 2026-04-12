@@ -65,3 +65,12 @@
   animation: shimmer 1.4s infinite;
   border-radius: 12px;
 }
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translate(-50%, 8px); }
+  to   { opacity: 1; transform: translate(-50%, 0); }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

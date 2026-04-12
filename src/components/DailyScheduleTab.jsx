@@ -132,8 +132,17 @@ function EmptyState() {
 }
 
 // ─── 메인 ────────────────────────────────────────────────────────────────────
+function OfflineBanner() {
+  return (
+    <div style={{ backgroundColor: '#fef3c7', padding: '6px 20px', fontSize: '11px', fontWeight: 500, color: '#92400e', display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="1" y1="1" x2="23" y2="23"/><path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.55"/><path d="M5 12.55a10.94 10.94 0 0 1 5.17-2.39"/><path d="M10.71 5.05A16 16 0 0 1 22.56 9"/><path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+      오프라인 · 마지막으로 저장된 데이터를 표시 중
+    </div>
+  );
+}
+
 export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active }) {
-  const { days, loading, error, refetch } = useGoogleSheets(sheetId, gid);
+  const { days, loading, error, fromCache, refetch } = useGoogleSheets(sheetId, gid);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // 탭 전환 시 자동 새로고침
@@ -160,6 +169,7 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
 
   return (
     <>
+      {fromCache && <OfflineBanner />}
       <DayTabBar days={days} currentIndex={safeIndex} onChange={setCurrentIndex} />
       <DayHeader
         day={day}
