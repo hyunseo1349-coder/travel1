@@ -232,10 +232,10 @@ function HeroSection({ trip, days, tripId }) {
 }
 
 // ─── Trip at a Glance (2×2 카드) ─────────────────────────────────────────────
-const IcoCal     = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
-const IcoGlobe   = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
-const IcoWallet  = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 14h.01" strokeWidth="3"/></svg>;
-const IcoReceipt = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="11" y2="15"/></svg>;
+const IcoCal     = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
+const IcoGlobe   = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>;
+const IcoWallet  = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 14h.01" strokeWidth="3"/></svg>;
+const IcoReceipt = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="11" y2="15"/></svg>;
 
 // 한국 관련 국가/도시 제외 키워드
 const KR_EXCLUDE = ['한국','korea','kr','대한민국','south korea','인천','서울','부산','대구','광주','대전','울산','수원','제주'];
@@ -254,7 +254,7 @@ function TripAtAGlance({ days, expenses }) {
   const countries   = [...new Set(foreignExp.map(e => e.country).filter(Boolean))];
   const cities      = [...new Set(foreignExp.map(e => e.city).filter(Boolean))];
 
-  const fmtM = n => n>=10000000 ? `₩${(n/10000000).toFixed(1)}천만` : n>=1000000 ? `₩${(n/1000000).toFixed(1)}M` : n>=10000 ? `₩${(n/10000).toFixed(0)}만` : `₩${n.toLocaleString()}`;
+  const fmtM = n => `${n.toLocaleString()}원`;
 
   // 국가 + 도시 합산 표시 문자열
   const countryLine = countries.length > 0 ? `${countries.length}개국` : '—';
@@ -268,19 +268,19 @@ function TripAtAGlance({ days, expenses }) {
   ];
 
   return (
-    <div style={{ backgroundColor:'#fff', padding:'14px 16px' }}>
-      <div style={{ display:'flex', alignItems:'center', marginBottom:'12px' }}>
-        <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'14px', fontWeight:700, color:'#111827', margin:0 }}>Trip at a glance</p>
+    <div style={{ backgroundColor:'#fff', padding:'10px 14px 12px' }}>
+      <div style={{ display:'flex', alignItems:'center', marginBottom:'10px' }}>
+        <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'13px', fontWeight:700, color:'#111827', margin:0 }}>Trip at a glance</p>
       </div>
-      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
+      <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
         {cells.map(({ Icon, label, value, sub }) => (
-          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'16px', padding:'14px 14px' }}>
-            <div style={{ width:32, height:32, borderRadius:'9px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'9px' }}>
+          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'14px', padding:'11px 12px' }}>
+            <div style={{ width:28, height:28, borderRadius:'8px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'7px' }}>
               <Icon />
             </div>
-            <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 3px' }}>{label}</p>
-            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'19px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.15 }}>{value}</p>
-            {sub && <p style={{ fontSize:'11px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
+            <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 2px' }}>{label}</p>
+            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'15px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.2, wordBreak:'break-all' }}>{value}</p>
+            {sub && <p style={{ fontSize:'10px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
       </div>
@@ -288,34 +288,46 @@ function TripAtAGlance({ days, expenses }) {
   );
 }
 
+// ─── 경비 시트 도시 열 기반 도시 추출 ────────────────────────────────────────
+function getCityFromExpenses(expenses, pd) {
+  if (!pd) return '';
+  const dateStr = `${pd.year}-${String(pd.month).padStart(2,'0')}-${String(pd.day).padStart(2,'0')}`;
+  const cities = [...new Set(
+    expenses.filter(e => e.date === dateStr && e.city?.trim()).map(e => e.city.trim())
+  )];
+  if (cities.length === 0) return '';
+  if (cities.length === 1) return cities[0];
+  return `${cities[0]} → ${cities[cities.length - 1]}`;
+}
+
 // ─── 전체 일정 요약 ───────────────────────────────────────────────────────────
-function ItinerarySummary({ days }) {
+function ItinerarySummary({ days, expenses }) {
   if (!days.length) return null;
 
   return (
-    <div style={{ backgroundColor:'#fff', padding:'20px' }}>
-      <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'15px', fontWeight:700, color:'#111827', margin:'0 0 16px' }}>Itinerary</p>
+    <div style={{ backgroundColor:'#fff', padding:'16px 16px 20px' }}>
+      <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'14px', fontWeight:700, color:'#111827', margin:'0 0 14px' }}>Itinerary</p>
 
       <div style={{ position:'relative' }}>
         {/* 타임라인 세로선 */}
-        <div style={{ position:'absolute', left:26, top:10, bottom:10, width:1, backgroundColor:'#e0ecdf' }} />
+        <div style={{ position:'absolute', left:26, top:8, bottom:8, width:1, backgroundColor:'#e0ecdf' }} />
 
         <div style={{ display:'flex', flexDirection:'column', gap:'0' }}>
           {days.map((day, idx) => {
             const pd    = day.parsedDate;
             const spots = day.items.filter(i => isTouristSpot(i.schedule));
-            const city  = getDayCity(day.items);
+            const city  = getCityFromExpenses(expenses, pd);
             const today = isActualToday(pd);
             const isPast= pd && (() => { const d=new Date(pd.year,pd.month-1,pd.day); const n=new Date(); n.setHours(0,0,0,0); return d<n; })();
 
             if (!pd && spots.length===0) return null;
 
             return (
-              <div key={day.key} style={{ display:'flex', gap:'14px', paddingBottom: idx < days.length-1 ? '18px' : 0 }}>
+              <div key={day.key} style={{ display:'flex', gap:'12px', paddingBottom: idx < days.length-1 ? '14px' : 0 }}>
                 {/* 날짜 뱃지 */}
                 <div style={{ flexShrink:0, width:52, display:'flex', flexDirection:'column', alignItems:'center', zIndex:1 }}>
                   <div style={{
-                    width:52, height:58, borderRadius:'20px',
+                    width:52, height:54, borderRadius:'18px',
                     display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
                     backgroundColor: today ? '#436440' : '#dff0db',
                     boxShadow: today ? '0 2px 10px rgba(67,100,64,0.35)' : 'none',
@@ -338,26 +350,25 @@ function ItinerarySummary({ days }) {
                 </div>
 
                 {/* 일정 내용 */}
-                <div style={{ flex:1, minWidth:0, paddingTop:'10px' }}>
-                  {city && (
-                    <p style={{ fontSize:'12px', fontWeight:700, color: today?'#436440':'#374151', margin:'0 0 5px', display:'flex', alignItems:'center', gap:'4px' }}>
-                      {today && <span style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'#436440', flexShrink:0, display:'inline-block' }} />}
-                      {city}
-                    </p>
-                  )}
+                <div style={{ flex:1, minWidth:0, paddingTop:'7px' }}>
+                  {/* 도시 (경비 시트 참조, 항상 상단에) */}
+                  <p style={{ fontSize:'12px', fontWeight:700, color: today?'#436440':'#374151', margin:'0 0 4px', display:'flex', alignItems:'center', gap:'4px' }}>
+                    {today && <span style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'#436440', flexShrink:0, display:'inline-block' }} />}
+                    {city || '—'}
+                  </p>
                   {spots.length > 0 ? (
-                    <div style={{ display:'flex', flexDirection:'column', gap:'3px' }}>
+                    <div style={{ display:'flex', flexDirection:'column', gap:'1px' }}>
                       {spots.map((item, i) => (
-                        <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'6px' }}>
-                          <span style={{ color: today?'#436440':'#c5d6c4', fontSize:'12px', lineHeight:'1.5', flexShrink:0 }}>•</span>
-                          <p style={{ fontSize:'13px', color: isPast?'#9ca3af':'#374151', margin:0, lineHeight:'1.5', wordBreak:'keep-all' }}>
+                        <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'5px' }}>
+                          <span style={{ color: today?'#436440':'#c5d6c4', fontSize:'11px', lineHeight:'1.5', flexShrink:0 }}>•</span>
+                          <p style={{ fontSize:'12px', color: isPast?'#b0bab0':'#4b5563', margin:0, lineHeight:'1.5', wordBreak:'keep-all' }}>
                             {item.schedule}
                           </p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <p style={{ fontSize:'12px', color:'#c5d6c4', margin:0, fontStyle:'italic' }}>이동일</p>
+                    <p style={{ fontSize:'11px', color:'#c5d6c4', margin:0, fontStyle:'italic' }}>이동일</p>
                   )}
                 </div>
               </div>
@@ -371,15 +382,41 @@ function ItinerarySummary({ days }) {
 
 // ─── 날씨 카드 ─────────────────────────────────────────────────────────────────
 function WeatherCard({ days, todayIdx, tripId }) {
-  const autoCity = days.length > 0 ? detectWeatherCity(days, todayIdx) : '';
-  const [city,    setCity]    = useState(() => loadWxCity(tripId) || '');
-  const [editing, setEditing] = useState(false);
-  const [draft,   setDraft]   = useState('');
+  const scheduleCity = days.length > 0 ? detectWeatherCity(days, todayIdx) : '';
+  const [city,       setCity]       = useState(() => loadWxCity(tripId) || '');
+  const [editing,    setEditing]    = useState(false);
+  const [draft,      setDraft]      = useState('');
+  const [detecting,  setDetecting]  = useState(false);
 
-  // 자동 감지 도시 반영 (localStorage 미설정 시)
+  // 위치 자동 인식 (localStorage 수동 설정 없을 때만)
   useEffect(() => {
-    if (!loadWxCity(tripId) && autoCity && !city) setCity(autoCity);
-  }, [autoCity, tripId]);
+    if (loadWxCity(tripId)) return; // 수동 설정 있으면 건너뜀
+    if (!navigator.geolocation) {
+      if (scheduleCity) setCity(scheduleCity);
+      return;
+    }
+    setDetecting(true);
+    navigator.geolocation.getCurrentPosition(
+      async ({ coords: { latitude: lat, longitude: lon } }) => {
+        try {
+          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`);
+          const data = await res.json();
+          const name = data.address?.city || data.address?.town || data.address?.village || '';
+          const resolved = name || scheduleCity;
+          if (resolved) { setCity(resolved); saveWxCity(tripId, resolved); }
+        } catch {
+          if (scheduleCity) setCity(scheduleCity);
+        }
+        setDetecting(false);
+      },
+      () => {
+        // 권한 거부 → 일정 기반 도시로 폴백
+        if (scheduleCity && !city) setCity(scheduleCity);
+        setDetecting(false);
+      },
+      { timeout: 8000 }
+    );
+  }, [tripId]);
 
   const { data, loading } = useWeather(city);
 
@@ -389,19 +426,48 @@ function WeatherCard({ days, todayIdx, tripId }) {
     setEditing(false);
   };
 
+  const handleRedetect = () => {
+    saveWxCity(tripId, '');
+    setCity('');
+    setDetecting(true);
+    navigator.geolocation?.getCurrentPosition(
+      async ({ coords: { latitude: lat, longitude: lon } }) => {
+        try {
+          const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`);
+          const data = await res.json();
+          const name = data.address?.city || data.address?.town || data.address?.village || '';
+          if (name) { setCity(name); saveWxCity(tripId, name); }
+        } catch {}
+        setDetecting(false);
+      },
+      () => setDetecting(false),
+      { timeout: 8000 }
+    );
+  };
+
   return (
     <div style={{ padding:'0 0 4px' }}>
       <div style={{ backgroundColor:'#436440', borderRadius:'20px', padding:'20px', margin:'0' }}>
         {/* 헤더 */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'14px' }}>
           <p style={{ color:'rgba(255,255,255,0.75)', fontSize:'12px', fontWeight:600, margin:0, letterSpacing:'0.05em' }}>Destination Weather</p>
-          <button
-            onClick={() => { setDraft(city); setEditing(true); }}
-            style={{ display:'flex', alignItems:'center', gap:'4px', color:'rgba(255,255,255,0.6)', fontSize:'11px', border:'none', background:'none', cursor:'pointer', padding:'2px 0' }}
-          >
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
-            {city || '도시 설정'}
-          </button>
+          <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+            {/* 위치 재감지 버튼 */}
+            <button
+              onClick={handleRedetect}
+              style={{ display:'flex', alignItems:'center', color:'rgba(255,255,255,0.5)', border:'none', background:'none', cursor:'pointer', padding:'2px' }}
+              title="위치 재감지"
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><path d="M12 2a10 10 0 0 1 0 20A10 10 0 0 1 12 2z" strokeDasharray="3 3"/></svg>
+            </button>
+            <button
+              onClick={() => { setDraft(city); setEditing(true); }}
+              style={{ display:'flex', alignItems:'center', gap:'4px', color:'rgba(255,255,255,0.6)', fontSize:'11px', border:'none', background:'none', cursor:'pointer', padding:'2px 0' }}
+            >
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+              {city || (detecting ? '감지 중...' : '도시 설정')}
+            </button>
+          </div>
         </div>
 
         {editing ? (
@@ -418,8 +484,13 @@ function WeatherCard({ days, todayIdx, tripId }) {
               확인
             </button>
           </div>
+        ) : detecting ? (
+          <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
+            <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', borderTopColor:'#fff' }} />
+            <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'13px', margin:0 }}>현재 위치 감지 중...</p>
+          </div>
         ) : !city ? (
-          <p style={{ color:'rgba(255,255,255,0.5)', fontSize:'13px', margin:0 }}>위의 연필 버튼으로 도시를 설정해주세요</p>
+          <p style={{ color:'rgba(255,255,255,0.5)', fontSize:'13px', margin:0 }}>위치를 감지하거나 도시를 직접 설정해주세요</p>
         ) : loading ? (
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', borderTopColor:'#fff' }} />
@@ -483,7 +554,7 @@ export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseShe
         <div style={{ padding:'0 16px 0' }}>
           <WeatherCard days={days} todayIdx={todayIdx} tripId={tripId} />
         </div>
-        {days.length > 0 && <ItinerarySummary days={days} />}
+        {days.length > 0 && <ItinerarySummary days={days} expenses={expenses} />}
       </div>
     </div>
   );
