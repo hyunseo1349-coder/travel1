@@ -1,6 +1,7 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from 'recharts';
 import { useExpenseSheet, localDateStr } from '../hooks/useExpenseSheet.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 
 // ─── 카테고리 메타 ────────────────────────────────────────────────────────────
 const CAT = {
@@ -452,12 +453,17 @@ function ErrorState({ message }) {
 }
 
 // ─── 메인 ────────────────────────────────────────────────────────────────────
-export default function BudgetTab({ sheetId, expenseGid }) {
-  const { expenses, rates, loading, error } = useExpenseSheet(sheetId, expenseGid);
+export default function BudgetTab({ sheetId, expenseGid, active }) {
+  const { expenses, rates, loading, error, refetch } = useExpenseSheet(sheetId, expenseGid);
   const [manualList,   setManualList]   = useState(loadManual);
   const [catOverrides, setCatOverrides] = useState(loadCatOverrides);
   const [catFilter,    setCatFilter]    = useState('ALL');
   const [showAdd,      setShowAdd]      = useState(false);
+
+  // 탭 전환 시 자동 새로고침
+  useEffect(() => {
+    if (active) refetch();
+  }, [active]);
 
   // 시트 + 수동 합산 (금액 있는 것만)
   const allExpenses = useMemo(() =>
@@ -477,11 +483,19 @@ export default function BudgetTab({ sheetId, expenseGid }) {
   const handleCatChange = (id, cat) => setCatOverrides(prev => ({ ...prev, [id]: cat }));
   const handleAdd = (entry) => setManualList(prev => [entry, ...prev]);
 
-  if (loading) return <Skeleton />;
-  if (error)   return <ErrorState message={error} />;
+  const { ref: scrollRef, pullDist, refreshing } = usePullToRefresh(refetch);
+
+  if (loading && !refreshing) return <Skeleton />;
+  if (error)                   return <ErrorState message={error} />;
 
   return (
-    <div style={{ flex:1, overflowY:'auto', backgroundColor:'#fafaf8' }} className="scrollbar-hide">
+    <div ref={scrollRef} style={{ flex:1, overflowY:'auto', backgroundColor:'#fafaf8' }} className="scrollbar-hide">
+      {/* Pull-to-refresh 인디케이터 */}
+      {(pullDist > 0 || refreshing) && (
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden', backgroundColor:'#fafaf8', flexShrink:0 }}>
+          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+        </div>
+      )}
 
       {/* ── 상단 요약 카드 ── */}
       <div style={{ margin:'14px 16px 10px', display:'flex', gap:'10px' }}>

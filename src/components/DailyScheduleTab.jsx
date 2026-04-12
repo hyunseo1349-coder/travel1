@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { useGoogleSheets, findTodayIndex } from '../hooks/useGoogleSheets.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 import ScheduleItem from './ScheduleItem.jsx';
 import SkeletonLoader from './SkeletonLoader.jsx';
 
@@ -131,10 +132,16 @@ function EmptyState() {
 }
 
 // ─── 메인 ────────────────────────────────────────────────────────────────────
-export default function DailyScheduleTab({ sheetId, gid, onSelectItem }) {
-  const { days, loading, error } = useGoogleSheets(sheetId, gid);
+export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active }) {
+  const { days, loading, error, refetch } = useGoogleSheets(sheetId, gid);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const scrollRef = useRef(null);
+
+  // 탭 전환 시 자동 새로고침
+  useEffect(() => {
+    if (active) refetch();
+  }, [active]);
+
+  const { ref: scrollRef, pullDist, refreshing } = usePullToRefresh(refetch);
 
   useEffect(() => {
     if (days.length > 0) setCurrentIndex(findTodayIndex(days));
@@ -144,9 +151,9 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem }) {
     if (scrollRef.current) scrollRef.current.scrollTo({ top: 0, behavior: 'smooth' });
   }, [currentIndex]);
 
-  if (loading) return <SkeletonLoader />;
-  if (error)   return <ErrorState message={error} />;
-  if (!days.length) return <EmptyState />;
+  if (loading && !refreshing) return <SkeletonLoader />;
+  if (error)                   return <ErrorState message={error} />;
+  if (!days.length)            return <EmptyState />;
 
   const safeIndex = Math.min(currentIndex, days.length - 1);
   const day = days[safeIndex];
@@ -162,6 +169,12 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem }) {
         hasNext={safeIndex < days.length - 1}
       />
       <div ref={scrollRef} className="flex-1 overflow-y-auto scrollbar-hide px-5 pb-28" style={{ overscrollBehavior: 'contain' }}>
+        {/* Pull-to-refresh 인디케이터 */}
+        {(pullDist > 0 || refreshing) && (
+          <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden' }}>
+            <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+          </div>
+        )}
         {day.items.length === 0 ? <EmptyState /> : (
           day.items.map((item, idx) => (
             <ScheduleItem

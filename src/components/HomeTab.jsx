@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useGoogleSheets, findTodayIndex } from '../hooks/useGoogleSheets.js';
 import { useExpenseSheet } from '../hooks/useExpenseSheet.js';
+import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 import PhotoCropper from './PhotoCropper.jsx';
 
 // ─── 관광지 필터 ──────────────────────────────────────────────────────────────
@@ -536,17 +537,32 @@ function Spinner() {
 }
 
 // ─── 메인 ─────────────────────────────────────────────────────────────────────
-export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseSheetId, expenseGid }) {
-  const { days,     loading: dLoad } = useGoogleSheets(scheduleSheetId, scheduleGid);
-  const { expenses, loading: eLoad } = useExpenseSheet(expenseSheetId,  expenseGid);
+export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseSheetId, expenseGid, active }) {
+  const { days,     loading: dLoad, refetch: refetchDays }     = useGoogleSheets(scheduleSheetId, scheduleGid);
+  const { expenses, loading: eLoad, refetch: refetchExpenses } = useExpenseSheet(expenseSheetId,  expenseGid);
 
-  if (dLoad || eLoad) return <Spinner />;
+  // 탭 전환 시 자동 새로고침
+  useEffect(() => {
+    if (active) { refetchDays(); refetchExpenses(); }
+  }, [active]);
+
+  const handleRefresh = () => { refetchDays(); refetchExpenses(); };
+  const { ref: scrollRef, pullDist, refreshing } = usePullToRefresh(handleRefresh);
+
+  if ((dLoad || eLoad) && !refreshing) return <Spinner />;
 
   const tripId   = trip?.id || 'default';
   const todayIdx = days.length > 0 ? findTodayIndex(days) : 0;
 
   return (
-    <div className="scrollbar-hide" style={{ flex:1, overflowY:'auto', backgroundColor:'#f0f2ee' }}>
+    <div ref={scrollRef} className="scrollbar-hide" style={{ flex:1, overflowY:'auto', backgroundColor:'#f0f2ee' }}>
+      {/* Pull-to-refresh 인디케이터 */}
+      {(pullDist > 0 || refreshing) && (
+        <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden', backgroundColor:'#f0f2ee', flexShrink:0 }}>
+          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+        </div>
+      )}
+
       <HeroSection trip={trip} days={days} tripId={tripId} />
 
       <div style={{ display:'flex', flexDirection:'column', gap:'8px', paddingBottom:'80px' }}>

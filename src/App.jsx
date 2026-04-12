@@ -86,30 +86,33 @@ export default function App() {
         <AppBar onMenuClick={() => setDrawerOpen(true)} activeTab={activeTab} />
         <div style={{ height: 1, backgroundColor: '#f0f0ee', flexShrink: 0 }} />
 
-        {/* 탭 콘텐츠 */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fafaf8' }}>
-          {activeTab === 'home' && (
+        {/* 탭 콘텐츠 — 항상 마운트, visibility로 전환 */}
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fafaf8', position: 'relative' }}>
+          <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', visibility: activeTab==='home' ? 'visible' : 'hidden', pointerEvents: activeTab==='home' ? 'auto' : 'none' }}>
             <HomeTab
               trip={activeTrip}
               scheduleSheetId={activeTrip.scheduleSheetId}
               scheduleGid={activeTrip.scheduleGid}
               expenseSheetId={activeTrip.expenseSheetId}
               expenseGid={activeTrip.expenseGid}
+              active={activeTab === 'home'}
             />
-          )}
-          {activeTab === 'schedule' && (
+          </div>
+          <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', visibility: activeTab==='schedule' ? 'visible' : 'hidden', pointerEvents: activeTab==='schedule' ? 'auto' : 'none' }}>
             <DailyScheduleTab
               sheetId={activeTrip.scheduleSheetId}
               gid={activeTrip.scheduleGid}
               onSelectItem={openDetail}
+              active={activeTab === 'schedule'}
             />
-          )}
-          {activeTab === 'budget' && (
+          </div>
+          <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', visibility: activeTab==='budget' ? 'visible' : 'hidden', pointerEvents: activeTab==='budget' ? 'auto' : 'none' }}>
             <BudgetTab
               sheetId={activeTrip.expenseSheetId}
               expenseGid={activeTrip.expenseGid}
+              active={activeTab === 'budget'}
             />
-          )}
+          </div>
         </div>
 
         {/* 하단 네비게이션 */}
