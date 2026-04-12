@@ -139,6 +139,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
         const iTime = findColIndex(headers, ['시간','time']);
         const iSch  = findColIndex(headers, ['일정','일정명','schedule','activity','활동']);
         const iLoc  = findColIndex(headers, ['장소','위치','place','location','venue']);
+        const iCity = findColIndex(headers, ['도시','city','cities','지역']);
 
         // 상세 필드: 컬럼 인덱스를 찾고 시트 순서대로 정렬
         const detailCols = DETAIL_FIELD_DEFS
@@ -164,6 +165,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
             time:          get(row, iTime),
             schedule:      get(row, iSch),
             location:      get(row, iLoc),   // 장소 (지도용)
+            city:          get(row, iCity),  // 도시 열 (있으면)
             orderedFields, // 시트 열 순서대로 정렬된 필드 목록
             // 개별 접근용 (icon 자동감지 등)
             content: orderedFields.find(f => f.key === 'content')?.value || '',

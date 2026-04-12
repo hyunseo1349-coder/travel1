@@ -186,7 +186,7 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
               note:      get(row, iNote),
             };
           })
-          .filter(e => e && (e.item || e.date) && e.amountKRW >= 0);
+          .filter(e => e && (e.item || e.date || e.city) && e.amountKRW >= 0);
 
         if (!cancelled) { setExpenses(data); setRates(mergedRates); }
       } catch (err) {

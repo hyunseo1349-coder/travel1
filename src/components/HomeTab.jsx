@@ -39,6 +39,11 @@ function isActualToday(pd) {
 
 // ─── 도시 추출 (이동 있으면 화살표 포함) ─────────────────────────────────────
 function getDayCity(items) {
+  // 0) 스케줄 시트의 명시적 도시 열 (가장 신뢰도 높음)
+  const explicitCities = [...new Set(items.map(i => i.city).filter(c => c?.trim()))];
+  if (explicitCities.length === 1) return explicitCities[0];
+  if (explicitCities.length >= 2) return `${explicitCities[0]} → ${explicitCities[explicitCities.length - 1]}`;
+
   // 1) 직접 경로 아이템 (예: "인천 → 로마", "인천공항(ICN) → 로마(FCO)")
   const routeItem = items.find(i => i.schedule.includes('→'));
   if (routeItem) {
@@ -275,12 +280,14 @@ function TripAtAGlance({ days, expenses }) {
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
         {cells.map(({ Icon, label, value, sub }) => (
-          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'14px', padding:'11px 12px' }}>
-            <div style={{ width:28, height:28, borderRadius:'8px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'7px' }}>
-              <Icon />
+          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'14px', padding:'10px 12px' }}>
+            <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'5px' }}>
+              <div style={{ width:22, height:22, borderRadius:'7px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+                <Icon />
+              </div>
+              <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:0, lineHeight:1 }}>{label}</p>
             </div>
-            <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 2px' }}>{label}</p>
-            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'15px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.2, wordBreak:'break-all' }}>{value}</p>
+            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'22px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.03em', lineHeight:1.1, wordBreak:'break-all' }}>{value}</p>
             {sub && <p style={{ fontSize:'10px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
