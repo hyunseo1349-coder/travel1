@@ -165,13 +165,15 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
             if (currency === 'KRW') krwAmt = localAmt;
 
             const rawCat = get(row, iCat);
+            // 카테고리 비어있으면 항목명으로 자동 분류
+            const resolvedCat = rawCat.trim() ? rawCat : item;
             return {
               id:        `exp-${idx}`,
               date:      normalizeDate(rawDate),
               dateRaw:   rawDate,
               country:   get(row, iCountry),
               item,
-              category:  normalizeCategory(rawCat),
+              category:    normalizeCategory(resolvedCat),
               categoryRaw: rawCat,
               currency,
               amount:    localAmt,
