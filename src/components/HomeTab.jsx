@@ -399,7 +399,7 @@ function ItinerarySummary({ days, expenses }) {
                     <div style={{ display:'flex', flexDirection:'column', gap:'1px' }}>
                       {spots.map((item, i) => (
                         <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'5px' }}>
-                          <span style={{ color: today?'var(--cp, #436440)':'#c5d6c4', fontSize:'11px', lineHeight:'1.5', flexShrink:0 }}>•</span>
+                          <span style={{ color: today?'var(--cp, #436440)':'var(--cm, #6b9466)', fontSize:'11px', lineHeight:'1.5', flexShrink:0, opacity: today ? 1 : 0.5 }}>•</span>
                           <p style={{ fontSize:'12px', color: isPast?'#b0bab0':'#4b5563', margin:0, lineHeight:'1.5', wordBreak:'keep-all' }}>
                             {item.schedule}
                           </p>
