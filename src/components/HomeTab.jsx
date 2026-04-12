@@ -36,12 +36,34 @@ function isActualToday(pd) {
   return pd.year === n.getFullYear() && pd.month === n.getMonth()+1 && pd.day === n.getDate();
 }
 
-// ─── 경로 추출 ────────────────────────────────────────────────────────────────
-function extractRoute(items) {
-  const ri = items.find(i => i.schedule.includes('→'));
-  if (ri) return ri.schedule.replace(/\([A-Z]{2,3}\)/g,'').replace(/\s+/g,' ').trim().slice(0,35);
-  const locs = [...new Set(items.map(i => i.location).filter(Boolean))];
-  if (locs.length > 0) return locs[0].split(/[,·]/)[0].trim().slice(0,20);
+// ─── 도시 추출 (이동 있으면 화살표 포함) ─────────────────────────────────────
+function getDayCity(items) {
+  // 1) 직접 경로 아이템 (예: "인천 → 로마", "인천공항(ICN) → 로마(FCO)")
+  const routeItem = items.find(i => i.schedule.includes('→'));
+  if (routeItem) {
+    const parts = routeItem.schedule
+      .replace(/\([A-Z]{2,3}\)/g, '')
+      .replace(/공항/g, '')
+      .split('→')
+      .map(p => p.trim().split(/[\s,()'"""]/)[0].trim())
+      .filter(Boolean);
+    if (parts.length >= 2) return `${parts[0]} → ${parts[1]}`;
+    if (parts.length === 1) return parts[0];
+  }
+  // 2) 출발/도착 쌍
+  const depItem = items.find(i => /출발|departure/i.test(i.schedule));
+  const arrItem = items.find(i => /도착|arrival/i.test(i.schedule));
+  if (depItem && arrItem) {
+    const clean = s => s.replace(/\([A-Z]{2,3}\)/g,'').replace(/공항|출발|도착|departure|arrival/gi,'').replace(/\s+/g,' ').trim();
+    const dep = clean(depItem.schedule).split(/\s+/)[0];
+    const arr = clean(arrItem.schedule).split(/\s+/)[0];
+    if (dep && arr && dep !== arr) return `${dep} → ${arr}`;
+    return arr || dep;
+  }
+  // 3) location 필드
+  const locs = [...new Set(items.map(i => i.location).filter(Boolean).map(l => l.split(/[,·]/)[0].trim()))];
+  if (locs.length >= 2) return `${locs[0]} → ${locs[locs.length - 1]}`;
+  if (locs.length === 1) return locs[0];
   return '';
 }
 
@@ -245,10 +267,9 @@ function TripAtAGlance({ days, expenses }) {
   ];
 
   return (
-    <div style={{ backgroundColor:'#fff', padding:'20px' }}>
-      <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'16px' }}>
-        <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'15px', fontWeight:700, color:'#111827', margin:0 }}>Trip at a glance</p>
-        <span style={{ fontSize:'10px', fontWeight:700, color:'#436440', letterSpacing:'0.08em' }}>SUMMARY</span>
+    <div style={{ backgroundColor:'#fff', padding:'14px 16px' }}>
+      <div style={{ display:'flex', alignItems:'center', marginBottom:'12px' }}>
+        <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'14px', fontWeight:700, color:'#111827', margin:0 }}>Trip at a glance</p>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
         {cells.map(({ Icon, label, value, sub }) => (
@@ -257,7 +278,7 @@ function TripAtAGlance({ days, expenses }) {
               <Icon />
             </div>
             <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 3px' }}>{label}</p>
-            <p style={{ fontSize:'19px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.15 }}>{value}</p>
+            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'19px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.15 }}>{value}</p>
             {sub && <p style={{ fontSize:'11px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
@@ -272,49 +293,55 @@ function ItinerarySummary({ days }) {
 
   return (
     <div style={{ backgroundColor:'#fff', padding:'20px' }}>
-      <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'15px', fontWeight:700, color:'#111827', margin:'0 0 16px' }}>전체 일정 요약</p>
+      <p style={{ fontFamily:"'Noto Serif KR',serif", fontSize:'15px', fontWeight:700, color:'#111827', margin:'0 0 16px' }}>Itinerary</p>
 
       <div style={{ position:'relative' }}>
         {/* 타임라인 세로선 */}
-        <div style={{ position:'absolute', left:30, top:8, bottom:8, width:1, backgroundColor:'#e8ede8' }} />
+        <div style={{ position:'absolute', left:26, top:10, bottom:10, width:1, backgroundColor:'#e0ecdf' }} />
 
         <div style={{ display:'flex', flexDirection:'column', gap:'0' }}>
           {days.map((day, idx) => {
             const pd    = day.parsedDate;
             const spots = day.items.filter(i => isTouristSpot(i.schedule));
-            const route = extractRoute(day.items);
+            const city  = getDayCity(day.items);
             const today = isActualToday(pd);
             const isPast= pd && (() => { const d=new Date(pd.year,pd.month-1,pd.day); const n=new Date(); n.setHours(0,0,0,0); return d<n; })();
 
             if (!pd && spots.length===0) return null;
 
             return (
-              <div key={day.key} style={{ display:'flex', gap:'16px', paddingBottom: idx < days.length-1 ? '20px' : 0 }}>
+              <div key={day.key} style={{ display:'flex', gap:'14px', paddingBottom: idx < days.length-1 ? '18px' : 0 }}>
                 {/* 날짜 뱃지 */}
-                <div style={{ flexShrink:0, width:44, display:'flex', flexDirection:'column', alignItems:'center', zIndex:1 }}>
+                <div style={{ flexShrink:0, width:52, display:'flex', flexDirection:'column', alignItems:'center', zIndex:1 }}>
                   <div style={{
-                    width:44, height:44, borderRadius:'12px', display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-                    backgroundColor: today ? '#436440' : isPast ? '#f0f0ee' : '#fff',
-                    border: today ? 'none' : `1.5px solid ${isPast ? '#e5e7eb' : '#d1d5db'}`,
-                    boxShadow: today ? '0 2px 8px rgba(67,100,64,0.3)' : 'none',
+                    width:52, height:58, borderRadius:'20px',
+                    display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
+                    backgroundColor: today ? '#436440' : '#dff0db',
+                    boxShadow: today ? '0 2px 10px rgba(67,100,64,0.35)' : 'none',
                   }}>
                     {pd ? (
                       <>
-                        <p style={{ fontSize:'11px', fontWeight:800, color: today?'#fff': isPast?'#9ca3af':'#1f2937', margin:0, lineHeight:1.1 }}>{String(pd.month).padStart(2,'0')}/{String(pd.day).padStart(2,'0')}</p>
-                        <p style={{ fontSize:'9px', color: today?'rgba(255,255,255,0.75)': isPast?'#b0bab0':'#9ca3af', margin:0 }}>{day.dayShort}</p>
+                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:800, color: today?'#fff':'#2d6b2a', margin:0, lineHeight:1.2 }}>
+                          {String(pd.month).padStart(2,'0')}/{String(pd.day).padStart(2,'0')}
+                        </p>
+                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'10px', fontWeight:600, color: today?'rgba(255,255,255,0.8)':'#5a9458', margin:0 }}>
+                          {day.dayShort}
+                        </p>
                       </>
                     ) : (
-                      <p style={{ fontSize:'11px', fontWeight:700, color:isPast?'#9ca3af':'#1f2937', margin:0 }}>D{day.seqNumber}</p>
+                      <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:700, color: today?'#fff':'#2d6b2a', margin:0 }}>
+                        D{day.seqNumber}
+                      </p>
                     )}
                   </div>
                 </div>
 
                 {/* 일정 내용 */}
                 <div style={{ flex:1, minWidth:0, paddingTop:'10px' }}>
-                  {route && (
-                    <p style={{ fontSize:'11px', fontWeight:600, color: today?'#436440':'#6b7280', margin:'0 0 5px', display:'flex', alignItems:'center', gap:'4px' }}>
+                  {city && (
+                    <p style={{ fontSize:'12px', fontWeight:700, color: today?'#436440':'#374151', margin:'0 0 5px', display:'flex', alignItems:'center', gap:'4px' }}>
                       {today && <span style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'#436440', flexShrink:0, display:'inline-block' }} />}
-                      {route}
+                      {city}
                     </p>
                   )}
                   {spots.length > 0 ? (
@@ -452,10 +479,10 @@ export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseShe
 
       <div style={{ display:'flex', flexDirection:'column', gap:'8px', paddingBottom:'80px' }}>
         <TripAtAGlance days={days} expenses={expenses} />
-        {days.length > 0 && <ItinerarySummary days={days} />}
-        <div style={{ padding:'0 20px 0' }}>
+        <div style={{ padding:'0 16px 0' }}>
           <WeatherCard days={days} todayIdx={todayIdx} tripId={tripId} />
         </div>
+        {days.length > 0 && <ItinerarySummary days={days} />}
       </div>
     </div>
   );
