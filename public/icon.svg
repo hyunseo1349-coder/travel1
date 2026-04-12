@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="112" fill="#436440"/>
+  <!-- 지도 핀 -->
+  <path d="M256 120c-57.4 0-104 46.6-104 104 0 73.5 104 168 104 168s104-94.5 104-168c0-57.4-46.6-104-104-104z" fill="#ffffff" opacity="0.95"/>
+  <circle cx="256" cy="224" r="38" fill="#436440"/>
+  <!-- 여행 가방 작은 점 -->
+  <circle cx="256" cy="420" r="10" fill="#ffffff" opacity="0.4"/>
+</svg>
