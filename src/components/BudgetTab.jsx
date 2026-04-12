@@ -129,21 +129,37 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
   const amountKRW = form.krwOverride !== '' ? Number(form.krwOverride) : autoKRW;
 
-  const handleSubmit = () => {
+  const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJnBj1Yj1hD-fMGmjQF-RpBLygL9RczdMMS4olLP97yYyQrfY6PObiwtgr-8bTyv25pQ/exec';
+
+  const handleSubmit = async () => {
     if (!form.item || !form.amount) return;
+    const rate = rates[form.currency] || DEFAULT_RATES[form.currency] || 1;
     const entry = {
       id: `manual-${Date.now()}`,
       date: form.date, country: form.country,
       item: form.item, category: form.category, categoryRaw: '',
       currency: form.currency, amount: Number(form.amount),
-      rate: rates[form.currency] || DEFAULT_RATES[form.currency] || 1,
-      amountKRW, method: form.method, note: form.note,
+      rate, amountKRW, method: form.method, note: form.note,
       isManual: true,
     };
     const updated = [entry, ...loadManual()];
     saveManual(updated);
     onAdd(entry);
     onClose();
+    // 구글 시트 자동 반영 (백그라운드)
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          date: form.date, country: form.country, item: form.item,
+          category: form.category, currency: form.currency,
+          amount: Number(form.amount), rate, amountKRW,
+          method: form.method, note: form.note,
+        }),
+      });
+    } catch { /* 시트 전송 실패해도 앱은 정상 동작 */ }
   };
 
   const inp = (label, key, type='text', placeholder='') => (
