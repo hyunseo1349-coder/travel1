@@ -1,48 +1,117 @@
+import { useState } from 'react';
 import { THEMES, THEME_ORDER } from '../theme.js';
 
-export default function SettingsTab({ activeThemeId, onThemeChange }) {
-  return (
-    <div style={{ flex: 1, overflowY: 'auto', backgroundColor: '#fff', paddingBottom: 80 }}>
-      <div style={{ padding: '24px 20px 16px' }}>
-        <p style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 15, fontWeight: 700, color: '#111827', margin: '0 0 4px' }}>Color Theme</p>
-        <p style={{ fontSize: 12, color: '#9ca3af', margin: '0 0 24px' }}>현재 여행에만 적용돼요</p>
+function Divider() {
+  return <div style={{ height: 1, backgroundColor: '#f0f0ee', margin: '0 0 0' }} />;
+}
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
-          {THEME_ORDER.map(id => {
-            const t = THEMES[id];
-            const active = activeThemeId === id;
-            return (
-              <button
-                key={id}
-                onClick={() => onThemeChange(id)}
-                style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
-              >
-                {/* 색상 원 */}
-                <div style={{
-                  width: 56, height: 56, borderRadius: '50%',
-                  backgroundColor: t.primary,
-                  border: active ? `3px solid ${t.primary}` : '3px solid transparent',
-                  outline: active ? `2px solid ${t.primary}` : '2px solid transparent',
-                  outlineOffset: 2,
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  boxShadow: active ? `0 4px 16px rgba(${t.primaryRgb},0.45)` : '0 2px 8px rgba(0,0,0,0.12)',
-                  transition: 'box-shadow 0.15s, outline 0.15s',
-                }}>
-                  {active && (
-                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                  )}
-                </div>
-                {/* 이름 */}
-                <span style={{ fontSize: 11, fontWeight: active ? 700 : 500, color: active ? t.primary : '#6b7280' }}>
-                  {t.name}
-                </span>
-              </button>
-            );
-          })}
+function SectionTitle({ children, sub }) {
+  return (
+    <div style={{ padding: '20px 20px 12px' }}>
+      <p style={{ fontFamily: "'Noto Serif KR',serif", fontSize: 15, fontWeight: 700, color: '#111827', margin: '0 0 2px' }}>{children}</p>
+      {sub && <p style={{ fontSize: 12, color: '#9ca3af', margin: 0 }}>{sub}</p>}
+    </div>
+  );
+}
+
+function SheetRow({ label, value, sheetId, gid }) {
+  const [copied, setCopied] = useState(false);
+  const url = sheetId ? `https://docs.google.com/spreadsheets/d/${sheetId}/edit` + (gid ? `#gid=${gid}` : '') : null;
+
+  const copy = () => {
+    if (!url) return;
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    });
+  };
+
+  return (
+    <div style={{ padding: '10px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <p style={{ fontSize: 12, fontWeight: 600, color: '#374151', margin: '0 0 2px' }}>{label}</p>
+        <p style={{ fontSize: 11, color: '#9ca3af', margin: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {sheetId ? `ID: ...${sheetId.slice(-8)}` + (gid ? ` · GID: ${gid}` : '') : '—'}
+        </p>
+      </div>
+      {url && (
+        <button
+          onClick={copy}
+          style={{ flexShrink: 0, padding: '5px 10px', borderRadius: 8, border: '1px solid #e5e7eb', backgroundColor: copied ? 'var(--cl, #dff0db)' : '#fff', color: copied ? 'var(--cp, #436440)' : '#6b7280', fontSize: 11, fontWeight: 600, cursor: 'pointer', transition: 'all 0.15s' }}
+        >
+          {copied ? '복사됨 ✓' : 'URL 복사'}
+        </button>
+      )}
+    </div>
+  );
+}
+
+export default function SettingsTab({ activeThemeId, onThemeChange, activeTrip }) {
+  return (
+    <div style={{ flex: 1, overflowY: 'auto', backgroundColor: '#f8faf8', paddingBottom: 80 }}>
+
+      {/* ── 테마 ── */}
+      <div style={{ backgroundColor: '#fff', marginBottom: 8 }}>
+        <SectionTitle sub="현재 여행에만 적용돼요">Color Theme</SectionTitle>
+        <div style={{ padding: '0 20px 20px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+            {THEME_ORDER.map(id => {
+              const t = THEMES[id];
+              const active = activeThemeId === id;
+              return (
+                <button
+                  key={id}
+                  onClick={() => onThemeChange(id)}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+                >
+                  <div style={{
+                    width: 52, height: 52, borderRadius: '50%',
+                    backgroundColor: t.primary,
+                    outline: active ? `2.5px solid ${t.primary}` : '2.5px solid transparent',
+                    outlineOffset: 3,
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    boxShadow: active ? `0 4px 16px rgba(${t.primaryRgb},0.4)` : '0 2px 8px rgba(0,0,0,0.10)',
+                    transition: 'all 0.15s',
+                  }}>
+                    {active && (
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="20 6 9 17 4 12"/>
+                      </svg>
+                    )}
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: active ? 700 : 500, color: active ? t.primary : '#6b7280' }}>
+                    {t.name}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
+
+      {/* ── 시트 연결 정보 ── */}
+      <div style={{ backgroundColor: '#fff', marginBottom: 8 }}>
+        <SectionTitle sub="연결된 Google Sheets 정보">시트 연결</SectionTitle>
+        <Divider />
+        <SheetRow
+          label="일정 시트"
+          sheetId={activeTrip?.scheduleSheetId}
+          gid={activeTrip?.scheduleGid}
+        />
+        <Divider />
+        <SheetRow
+          label="경비 시트"
+          sheetId={activeTrip?.expenseSheetId}
+          gid={activeTrip?.expenseGid}
+        />
+        <div style={{ padding: '8px 20px 16px' }}>
+          <p style={{ fontSize: 11, color: '#c0c8c0', margin: 0, lineHeight: 1.5 }}>
+            시트는 공개 설정이어야 앱에서 읽을 수 있어요.<br/>
+            변경이 필요하면 드로어(☰)에서 여행 설정을 수정해주세요.
+          </p>
+        </div>
+      </div>
+
     </div>
   );
 }

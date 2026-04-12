@@ -15,12 +15,12 @@ function TimeCell({ time }) {
     <div style={{ width: 48, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', paddingTop: '16px' }}>
       {parts.length >= 2 ? (
         <>
-          <span style={{ fontSize: '11px', fontWeight: 600, color: '#436440', lineHeight: 1.3, textAlign: 'right' }}>{parts[0]}</span>
+          <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp, #436440)', lineHeight: 1.3, textAlign: 'right' }}>{parts[0]}</span>
           <span style={{ fontSize: '9px', color: '#8faa8d', lineHeight: 1 }}>↓</span>
-          <span style={{ fontSize: '11px', fontWeight: 600, color: '#436440', lineHeight: 1.3, textAlign: 'right' }}>{parts[parts.length - 1]}</span>
+          <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp, #436440)', lineHeight: 1.3, textAlign: 'right' }}>{parts[parts.length - 1]}</span>
         </>
       ) : (
-        <span style={{ fontSize: '11px', fontWeight: 600, color: '#436440', lineHeight: 1.3, textAlign: 'right' }}>{parts[0]}</span>
+        <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp, #436440)', lineHeight: 1.3, textAlign: 'right' }}>{parts[0]}</span>
       )}
     </div>
   );
@@ -54,7 +54,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
         <div style={{ flex: 1, minWidth: 0, paddingBottom: '12px' }}>
           <div style={{
             backgroundColor: '#fff', borderRadius: '18px',
-            boxShadow: '0 2px 12px rgba(67,100,64,0.07)', overflow: 'hidden',
+            boxShadow: '0 2px 12px rgba(var(--cp-rgb, 67,100,64),0.07)', overflow: 'hidden',
           }}>
             <div style={{ padding: '12px', display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
 
@@ -63,7 +63,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
                 onClick={e => { e.stopPropagation(); setShowPicker(true); }}
                 style={{
                   flexShrink: 0, width: 42, height: 42, borderRadius: '13px',
-                  backgroundColor: '#f2f6f2', color: '#436440',
+                  backgroundColor: 'var(--cc, #f8faf8)', color: 'var(--cp, #436440)',
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   cursor: 'pointer', marginTop: '1px',
                 }}

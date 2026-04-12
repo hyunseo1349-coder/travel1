@@ -131,7 +131,7 @@ export default function App() {
             />
           </div>
           <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', visibility: activeTab==='settings' ? 'visible' : 'hidden', pointerEvents: activeTab==='settings' ? 'auto' : 'none', overflowY:'auto' }}>
-            <SettingsTab activeThemeId={themeId} onThemeChange={handleThemeChange} />
+            <SettingsTab activeThemeId={themeId} onThemeChange={handleThemeChange} activeTrip={activeTrip} />
           </div>
         </div>
 

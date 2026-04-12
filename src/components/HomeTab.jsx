@@ -376,7 +376,7 @@ function ItinerarySummary({ days, expenses }) {
                         <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:800, color: today?'#fff':'var(--cm, #6b9466)', margin:0, lineHeight:1.2 }}>
                           {String(pd.month).padStart(2,'0')}/{String(pd.day).padStart(2,'0')}
                         </p>
-                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'10px', fontWeight:600, color: today?'rgba(255,255,255,0.8)':'#5a9458', margin:0 }}>
+                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'10px', fontWeight:600, color: today?'rgba(255,255,255,0.8)':'var(--cm, #6b9466)', margin:0 }}>
                           {day.dayShort}
                         </p>
                       </>
