@@ -1,355 +1,241 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Theme Preview — The Journey</title>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      background: #f1f3f0;
-      font-family: 'Inter', -apple-system, sans-serif;
-      min-height: 100vh;
-      padding: 40px 24px 60px;
-    }
-
-    h1 {
-      font-family: 'Noto Serif KR', serif;
-      font-size: 22px; font-weight: 700; color: #1a2e1a;
-      margin-bottom: 6px;
-    }
-    .subtitle { font-size: 13px; color: #6b7280; margin-bottom: 36px; }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 28px;
-      max-width: 1080px;
-    }
-
-    /* ── Phone shell ── */
-    .phone {
-      width: 180px;
-      border-radius: 32px;
-      overflow: hidden;
-      box-shadow: 0 12px 40px rgba(0,0,0,0.18);
-      background: #fff;
-      cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
-      position: relative;
-    }
-    .phone:hover { transform: translateY(-4px); box-shadow: 0 20px 50px rgba(0,0,0,0.22); }
-    .phone.active { outline: 3px solid #1d4ed8; outline-offset: 3px; }
-
-    /* ── Status bar ── */
-    .status-bar {
-      height: 22px;
-      display: flex; align-items: center; justify-content: flex-end;
-      padding: 0 16px; font-size: 9px; font-weight: 600;
-    }
-
-    /* ── App bar ── */
-    .app-bar {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 14px 8px;
-      background: #fff;
-    }
-    .menu-btn {
-      width: 22px; height: 22px; border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0;
-    }
-    .app-bar-title { font-size: 10px; font-weight: 700; }
-    .app-bar-pin {
-      width: 22px; height: 22px; border-radius: 50%;
-      margin-left: auto;
-      display: flex; align-items: center; justify-content: center;
-    }
-
-    /* ── Hero ── */
-    .hero {
-      height: 100px;
-      position: relative;
-      display: flex; align-items: flex-end;
-    }
-    .hero-img {
-      position: absolute; inset: 0;
-      background-size: cover; background-position: center;
-    }
-    .hero-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,0.78) 0%, rgba(0,0,0,0.05) 60%, transparent);
-    }
-    .hero-text { position: relative; padding: 10px 12px; color: #fff; }
-    .hero-date { font-size: 7px; opacity: 0.6; margin-bottom: 2px; }
-    .hero-title { font-family: 'Noto Serif KR', serif; font-size: 13px; font-weight: 700; line-height: 1.3; }
-
-    /* ── Body ── */
-    .body { padding: 10px 10px 0; display: flex; flex-direction: column; gap: 7px; }
-
-    /* ── Glance card ── */
-    .glance {
-      border-radius: 12px; padding: 9px 10px; background: #fff;
-    }
-    .glance-title { font-size: 8px; font-weight: 700; margin-bottom: 6px; font-family: 'Noto Serif KR', serif; }
-    .glance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-    .glance-cell {
-      border-radius: 9px; padding: 7px 8px;
-    }
-    .cell-icon { width: 16px; height: 16px; border-radius: 5px; margin-bottom: 4px; display: flex; align-items: center; justify-content: center; }
-    .cell-label { font-size: 6px; font-weight: 700; letter-spacing: 0.07em; text-transform: uppercase; margin-bottom: 2px; color: #9ca3af; }
-    .cell-value { font-size: 12px; font-weight: 800; letter-spacing: -0.02em; color: #1f2937; }
-
-    /* ── Weather card ── */
-    .weather {
-      border-radius: 12px; padding: 10px 11px;
-    }
-    .wx-label { font-size: 7px; font-weight: 600; letter-spacing: 0.05em; opacity: 0.7; color: #fff; margin-bottom: 6px; }
-    .wx-temp { font-size: 26px; font-weight: 700; color: #fff; letter-spacing: -0.03em; line-height: 1; }
-    .wx-desc { font-size: 7px; color: rgba(255,255,255,0.65); margin-top: 2px; }
-
-    /* ── Itinerary ── */
-    .itinerary {
-      border-radius: 12px; padding: 9px 10px; background: #fff;
-    }
-    .itin-title { font-size: 8px; font-weight: 700; margin-bottom: 7px; font-family: 'Noto Serif KR', serif; }
-    .itin-row { display: flex; gap: 7px; margin-bottom: 7px; align-items: flex-start; }
-    .itin-badge {
-      width: 30px; height: 34px; border-radius: 11px; flex-shrink: 0;
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-    }
-    .badge-date { font-size: 6px; font-weight: 800; color: #fff; line-height: 1.2; }
-    .badge-day  { font-size: 5px; font-weight: 600; line-height: 1; }
-    .itin-text { padding-top: 2px; }
-    .itin-city { font-size: 7px; font-weight: 700; color: #374151; margin-bottom: 2px; }
-    .itin-spot { font-size: 7px; color: #6b7280; line-height: 1.4; }
-
-    /* ── Bottom nav ── */
-    .bottom-nav {
-      display: flex; justify-content: space-around; align-items: center;
-      padding: 8px 0 12px; border-top: 1px solid #f0f0ee;
-      background: #fff; margin-top: 7px;
-    }
-    .nav-item { display: flex; flex-direction: column; align-items: center; gap: 2px; }
-    .nav-dot  { width: 20px; height: 3px; border-radius: 999px; }
-    .nav-label { font-size: 7px; font-weight: 500; color: #9ca3af; }
-    .nav-label.active { font-weight: 700; }
-
-    /* ── Label below phone ── */
-    .theme-label {
-      text-align: center; margin-top: 10px;
-    }
-    .theme-name  { font-size: 13px; font-weight: 700; color: #1f2937; }
-    .theme-swatch-row { display: flex; gap: 4px; justify-content: center; margin-top: 5px; }
-    .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1.5px solid rgba(0,0,0,0.08); }
-    .theme-desc { font-size: 11px; color: #9ca3af; margin-top: 3px; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Color Theme Preview</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;700&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: #f0f0f0;
+    padding: 40px 20px 60px;
+    min-height: 100vh;
+  }
+  h1 {
+    text-align: center;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 6px;
+    font-family: 'Noto Serif KR', serif;
+  }
+  .subtitle {
+    text-align: center;
+    font-size: 13px;
+    color: #9ca3af;
+    margin-bottom: 36px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 28px;
+    max-width: 980px;
+    margin: 0 auto;
+  }
+  .theme-card {
+    background: #fff;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+  }
+  .theme-label {
+    padding: 14px 18px 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .theme-dot { width: 16px; height: 16px; border-radius: 50%; flex-shrink: 0; }
+  .theme-name { font-size: 15px; font-weight: 700; color: #111827; font-family: 'Noto Serif KR', serif; }
+  .theme-desc { font-size: 11px; color: #9ca3af; margin-top: 1px; }
+  .phone { margin: 0 16px 16px; border-radius: 20px; overflow: hidden; border: 1px solid #ececec; background: #fff; }
+  .hero { height: 110px; position: relative; display: flex; flex-direction: column; justify-content: flex-end; padding: 14px 16px; }
+  .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.05) 100%); }
+  .hero-date { color: rgba(255,255,255,0.65); font-size: 10px; position: relative; margin-bottom: 3px; }
+  .hero-title { color: #fff; font-size: 16px; font-weight: 700; position: relative; font-family: 'Noto Serif KR', serif; }
+  .hero-badge { position: absolute; top: 10px; right: 12px; font-size: 10px; font-weight: 800; padding: 3px 9px; border-radius: 999px; background: rgba(255,255,255,0.92); }
+  .glance { padding: 10px 12px 12px; background: #fff; }
+  .glance-title { font-size: 12px; font-weight: 700; margin-bottom: 8px; font-family: 'Noto Serif KR', serif; color: #111827; }
+  .glance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+  .glance-cell { border-radius: 12px; padding: 9px 10px; }
+  .glance-row { display: flex; align-items: center; gap: 5px; margin-bottom: 4px; }
+  .glance-icon { width: 20px; height: 20px; border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 11px; }
+  .glance-lbl { font-size: 8px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; line-height: 1; }
+  .glance-val { font-size: 15px; font-weight: 700; font-family: 'Noto Serif KR', serif; line-height: 1.2; color: #1f2937; }
+  .glance-sub { font-size: 9px; font-weight: 600; margin-top: 1px; }
+  .weather { margin: 0 12px 10px; border-radius: 16px; padding: 14px; }
+  .wx-lbl { font-size: 10px; font-weight: 600; letter-spacing: 0.06em; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+  .wx-main { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 6px; }
+  .wx-temp { font-size: 34px; font-weight: 700; color: #fff; letter-spacing: -0.03em; line-height: 1; }
+  .wx-icon { font-size: 30px; line-height: 1; }
+  .wx-desc { font-size: 11px; color: rgba(255,255,255,0.65); margin-bottom: 8px; }
+  .wx-divider { height: 1px; background: rgba(255,255,255,0.18); margin-bottom: 8px; }
+  .wx-days { display: flex; justify-content: space-between; }
+  .wx-day { text-align: center; }
+  .wx-day-lbl { font-size: 9px; color: rgba(255,255,255,0.55); margin-bottom: 3px; }
+  .wx-day-icon { font-size: 11px; margin-bottom: 2px; }
+  .wx-day-temp { font-size: 11px; font-weight: 600; color: #fff; }
+  .itin { padding: 10px 12px 12px; background: #fff; }
+  .itin-title { font-size: 12px; font-weight: 700; color: #111827; font-family: 'Noto Serif KR', serif; margin-bottom: 10px; }
+  .itin-row { display: flex; gap: 10px; margin-bottom: 10px; }
+  .itin-badge { width: 42px; height: 44px; border-radius: 14px; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0; }
+  .itin-mo  { font-size: 8px; font-weight: 800; line-height: 1.2; }
+  .itin-day { font-size: 16px; font-weight: 800; line-height: 1; }
+  .itin-dow { font-size: 8px; font-weight: 600; line-height: 1.3; opacity: 0.75; }
+  .itin-content { flex: 1; padding-top: 4px; }
+  .itin-city { font-size: 11px; font-weight: 700; margin-bottom: 3px; }
+  .itin-spot { font-size: 10px; color: #6b7280; line-height: 1.5; }
+</style>
 </head>
 <body>
 
-<h1>컬러 테마 선택</h1>
-<p class="subtitle">마음에 드는 테마를 선택하면 여행에 적용할 수 있어요.</p>
+<h1>Color Theme Preview</h1>
+<p class="subtitle">여행 앱 테마 색상 제안 — 마음에 드는 스타일을 골라주세요</p>
 
-<div class="grid" id="theme-grid"></div>
+<div class="grid" id="grid"></div>
 
 <script>
-const THEMES = [
+const themes = [
   {
-    id: 'sage',
-    name: 'Sage Green',
-    desc: '현재 테마 · 자연 · 편안함',
-    primary:   '#436440',
-    light:     '#dff0db',
-    lightText: '#2d6b2a',
-    accent:    '#6b9466',
-    bg:        '#f0f2ee',
-    cardBg:    '#f8faf8',
-    iconBg:    '#edf4ec',
-    swatches:  ['#436440','#dff0db','#6b9466','#f0f2ee'],
+    id: 'emerald',
+    name: 'Emerald',
+    desc: '현재 테마 · 차분한 숲 초록',
+    primary: '#436440', light: '#dff0db', mid: '#6b9466',
+    cellBg: '#f8faf8', iconBg: '#edf4ec',
+    heroBg: 'linear-gradient(135deg,#2d5a27,#436440,#6b9466)',
   },
   {
-    id: 'cobalt',
-    name: 'Cobalt Blue',
-    desc: '바다 · 하늘 · 신선함',
-    primary:   '#1d4ed8',
-    light:     '#dbeafe',
-    lightText: '#1e40af',
-    accent:    '#3b82f6',
-    bg:        '#eff4fb',
-    cardBg:    '#f5f9ff',
-    iconBg:    '#dbeafe',
-    swatches:  ['#1d4ed8','#dbeafe','#3b82f6','#eff4fb'],
+    id: 'aegean',
+    name: 'Aegean',
+    desc: '지중해 · 깊고 시원한 청록',
+    primary: '#2c5f6e', light: '#d6edf2', mid: '#4d8fa0',
+    cellBg: '#f4fafc', iconBg: '#e0f0f5',
+    heroBg: 'linear-gradient(135deg,#1a404f,#2c5f6e,#4d8fa0)',
   },
   {
-    id: 'terracotta',
-    name: 'Terracotta',
-    desc: '이탈리아 · 따뜻함 · 낭만',
-    primary:   '#b5451b',
-    light:     '#fde8df',
-    lightText: '#92340e',
-    accent:    '#d4724a',
-    bg:        '#faf3f0',
-    cardBg:    '#fff8f5',
-    iconBg:    '#fde8df',
-    swatches:  ['#b5451b','#fde8df','#d4724a','#faf3f0'],
+    id: 'sienna',
+    name: 'Sienna',
+    desc: '이탈리아 · 따뜻한 테라코타',
+    primary: '#7a4228', light: '#f5e0d6', mid: '#b07058',
+    cellBg: '#fdf8f6', iconBg: '#f5e5de',
+    heroBg: 'linear-gradient(135deg,#5c2e18,#7a4228,#b07058)',
   },
   {
-    id: 'midnight',
-    name: 'Midnight',
-    desc: '고급스러움 · 심플 · 모던',
-    primary:   '#312e81',
-    light:     '#e0e7ff',
-    lightText: '#3730a3',
-    accent:    '#6366f1',
-    bg:        '#f0f0f7',
-    cardBg:    '#f6f6fc',
-    iconBg:    '#e0e7ff',
-    swatches:  ['#312e81','#e0e7ff','#6366f1','#f0f0f7'],
+    id: 'amethyst',
+    name: 'Amethyst',
+    desc: '유럽 · 우아한 라벤더 퍼플',
+    primary: '#5c4a7a', light: '#e8e0f5', mid: '#8b7ab0',
+    cellBg: '#faf8fd', iconBg: '#ede8f7',
+    heroBg: 'linear-gradient(135deg,#3d2f5c,#5c4a7a,#8b7ab0)',
   },
   {
-    id: 'rose',
-    name: 'Rose',
-    desc: '로맨틱 · 감성 · 여행 일기',
-    primary:   '#9d174d',
-    light:     '#fde7ef',
-    lightText: '#831843',
-    accent:    '#ec4899',
-    bg:        '#fdf0f5',
-    cardBg:    '#fff5f9',
-    iconBg:    '#fde7ef',
-    swatches:  ['#9d174d','#fde7ef','#ec4899','#fdf0f5'],
+    id: 'slate',
+    name: 'Slate',
+    desc: '도시 · 세련된 차콜 그레이',
+    primary: '#374151', light: '#e5e7eb', mid: '#6b7280',
+    cellBg: '#f9fafb', iconBg: '#e8eaed',
+    heroBg: 'linear-gradient(135deg,#1f2937,#374151,#6b7280)',
   },
   {
-    id: 'amber',
-    name: 'Amber Sand',
-    desc: '사막 · 모로코 · 따사로움',
-    primary:   '#92400e',
-    light:     '#fef3c7',
-    lightText: '#78350f',
-    accent:    '#d97706',
-    bg:        '#fdf8ee',
-    cardBg:    '#fffcf3',
-    iconBg:    '#fef3c7',
-    swatches:  ['#92400e','#fef3c7','#d97706','#fdf8ee'],
+    id: 'coral',
+    name: 'Coral',
+    desc: '열대 · 생동감 있는 코랄',
+    primary: '#b5533c', light: '#fde8e2', mid: '#d4806a',
+    cellBg: '#fdf7f6', iconBg: '#fae5df',
+    heroBg: 'linear-gradient(135deg,#8c3828,#b5533c,#d4806a)',
   },
 ];
 
-function phoneHTML(t) {
-  const todayBadge = `background:${t.primary}`;
-  const otherBadge = `background:${t.light}`;
+const itinDays = [
+  { mo:'SEP', day:'26', dow:'토', city:'인천 → 로마', spots:['이동일'], today:true },
+  { mo:'SEP', day:'27', dow:'일', city:'로마', spots:['콜로세움 & 포로 로마노','광장 야경 투어'], today:false },
+];
+
+const wxDays = [
+  { lbl:'월', icon:'☀️', temp:24 },
+  { lbl:'화', icon:'🌤', temp:21 },
+  { lbl:'수', icon:'☁️', temp:19 },
+  { lbl:'목', icon:'🌧', temp:17 },
+];
+
+const glanceCells = [
+  { icon:'📅', lbl:'DURATION',  val:'11일',        sub:null },
+  { icon:'🌐', lbl:'COUNTRIES', val:'2개국',       sub:'8개 도시' },
+  { icon:'💳', lbl:'총 지출',   val:'1,234,567원', sub:null },
+  { icon:'🧾', lbl:'오늘 지출', val:'87,400원',    sub:null },
+];
+
+function makePhone(t) {
+  const glanceHtml = glanceCells.map(c => `
+    <div class="glance-cell" style="background:${t.cellBg}">
+      <div class="glance-row">
+        <div class="glance-icon" style="background:${t.iconBg};color:${t.primary}">${c.icon}</div>
+        <span class="glance-lbl" style="color:${t.mid}">${c.lbl}</span>
+      </div>
+      <div class="glance-val">${c.val}</div>
+      ${c.sub ? `<div class="glance-sub" style="color:${t.mid}">${c.sub}</div>` : ''}
+    </div>`).join('');
+
+  const wxHtml = wxDays.map(d => `
+    <div class="wx-day">
+      <div class="wx-day-lbl">${d.lbl}</div>
+      <div class="wx-day-icon">${d.icon}</div>
+      <div class="wx-day-temp">${d.temp}°</div>
+    </div>`).join('');
+
+  const itinHtml = itinDays.map(r => `
+    <div class="itin-row">
+      <div class="itin-badge" style="background:${r.today ? t.primary : t.light}">
+        <div class="itin-mo"  style="color:${r.today ? 'rgba(255,255,255,0.75)' : t.mid}">${r.mo}</div>
+        <div class="itin-day" style="color:${r.today ? '#fff' : t.primary}">${r.day}</div>
+        <div class="itin-dow" style="color:${r.today ? 'rgba(255,255,255,0.75)' : t.mid}">${r.dow}</div>
+      </div>
+      <div class="itin-content">
+        <div class="itin-city" style="color:${r.today ? t.primary : '#374151'}">${r.city}</div>
+        ${r.spots.map(s => `<div class="itin-spot">• ${s}</div>`).join('')}
+      </div>
+    </div>`).join('');
+
   return `
-    <div class="status-bar" style="background:${t.bg}; color:${t.primary}">9:41</div>
-
-    <div class="app-bar" style="background:#fff; border-bottom:1px solid ${t.light}">
-      <div class="menu-btn" style="background:${t.iconBg}; color:${t.primary}">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </div>
-      <span class="app-bar-title" style="color:#1a2e1a">Summary</span>
-      <div class="app-bar-pin" style="background:${t.primary}; margin-left:auto">
-        <svg width="9" height="9" viewBox="0 0 24 24" fill="white"><path d="M12 2C8 2 5 6 5 10c0 5.25 7 12 7 12s7-6.75 7-12c0-4-3-8-7-8zm0 10.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/></svg>
+  <div class="theme-card">
+    <div class="theme-label">
+      <div class="theme-dot" style="background:${t.primary}"></div>
+      <div>
+        <div class="theme-name">${t.name}</div>
+        <div class="theme-desc">${t.desc}</div>
       </div>
     </div>
-
-    <div class="hero">
-      <div class="hero-img" style="background:linear-gradient(135deg, ${t.primary}cc, ${t.accent})"></div>
-      <div class="hero-overlay"></div>
-      <div class="hero-text">
-        <div class="hero-date">2026 · 04.12 — 04.26</div>
-        <div class="hero-title">이탈리아·스위스</div>
+    <div class="phone">
+      <div class="hero" style="background:${t.heroBg}">
+        <div class="hero-overlay"></div>
+        <div class="hero-badge" style="color:${t.primary}">D-38</div>
+        <div class="hero-date">2026 · 09.26 — 10.06</div>
+        <div class="hero-title">이탈리아 · 스위스</div>
       </div>
-    </div>
-
-    <div class="body" style="background:${t.bg}">
-
       <div class="glance">
-        <div class="glance-title" style="color:#111827">Trip at a glance</div>
-        <div class="glance-grid">
-          ${['15일','2개국','1,240,000원','42,000원'].map((v,i) => `
-          <div class="glance-cell" style="background:${t.cardBg}">
-            <div class="cell-icon" style="background:${t.iconBg}; color:${t.primary}">
-              <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            </div>
-            <div class="cell-label">${['DURATION','COUNTRIES','총 지출','오늘'][i]}</div>
-            <div class="cell-value" style="font-size:${v.length>6?'9px':'12px'}">${v}</div>
-          </div>`).join('')}
-        </div>
+        <div class="glance-title">Trip at a glance</div>
+        <div class="glance-grid">${glanceHtml}</div>
       </div>
-
       <div class="weather" style="background:${t.primary}">
-        <div class="wx-label">Destination Weather</div>
-        <div style="display:flex;align-items:flex-end;justify-content:space-between">
-          <div>
-            <div class="wx-temp">18°C</div>
-            <div class="wx-desc">대체로 맑음 · Rome</div>
-          </div>
-          <span style="font-size:22px;line-height:1;margin-bottom:2px">🌤</span>
+        <div class="wx-lbl">Destination Weather</div>
+        <div class="wx-main">
+          <div class="wx-temp">22°C</div>
+          <div class="wx-icon">⛅</div>
         </div>
+        <div class="wx-desc">대체로 맑음 · Rome</div>
+        <div class="wx-divider"></div>
+        <div class="wx-days">${wxHtml}</div>
       </div>
-
-      <div class="itinerary">
-        <div class="itin-title" style="color:#111827">Itinerary</div>
-        ${[
-          {date:'04/12',day:'토',city:'로마',spot:'콜로세움',today:true},
-          {date:'04/13',day:'일',city:'로마',spot:'바티칸 박물관',today:false},
-          {date:'04/14',day:'월',city:'피렌체',spot:'우피치 미술관',today:false},
-        ].map(r => `
-        <div class="itin-row">
-          <div class="itin-badge" style="${r.today ? todayBadge : otherBadge}">
-            <div class="badge-date" style="color:${r.today?'#fff':t.lightText}">${r.date}</div>
-            <div class="badge-day"  style="color:${r.today?'rgba(255,255,255,0.75)':t.accent}">${r.day}</div>
-          </div>
-          <div class="itin-text">
-            <div class="itin-city" style="color:${r.today?t.primary:'#374151'}">${r.today?'● ':''} ${r.city}</div>
-            <div class="itin-spot">• ${r.spot}</div>
-          </div>
-        </div>`).join('')}
+      <div class="itin">
+        <div class="itin-title">Itinerary</div>
+        ${itinHtml}
       </div>
-
     </div>
-
-    <div class="bottom-nav">
-      ${[
-        {label:'홈', active:true},
-        {label:'일정', active:false},
-        {label:'예산', active:false},
-      ].map(n => `
-      <div class="nav-item">
-        <div class="nav-dot" style="background:${n.active ? t.primary : '#e5e7eb'}"></div>
-        <span class="nav-label ${n.active?'active':''}" style="${n.active?'color:'+t.primary:''}">${n.label}</span>
-      </div>`).join('')}
-    </div>
-  `;
+  </div>`;
 }
 
-const grid = document.getElementById('theme-grid');
-THEMES.forEach(t => {
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-direction:column;align-items:center';
-
-  const phone = document.createElement('div');
-  phone.className = 'phone' + (t.id === 'sage' ? ' active' : '');
-  phone.innerHTML = phoneHTML(t);
-  phone.onclick = () => {
-    document.querySelectorAll('.phone').forEach(p => p.classList.remove('active'));
-    phone.classList.add('active');
-  };
-
-  const label = document.createElement('div');
-  label.className = 'theme-label';
-  label.innerHTML = `
-    <div class="theme-name">${t.name}</div>
-    <div class="theme-swatch-row">
-      ${t.swatches.map(c => `<div class="swatch" style="background:${c}"></div>`).join('')}
-    </div>
-    <div class="theme-desc">${t.desc}</div>
-  `;
-
-  wrap.appendChild(phone);
-  wrap.appendChild(label);
-  grid.appendChild(wrap);
-});
+document.getElementById('grid').innerHTML = themes.map(makePhone).join('');
 </script>
 </body>
 </html>
