@@ -6,7 +6,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 // ─── 카테고리 메타 ────────────────────────────────────────────────────────────
 const CAT = {
   '식비':  { color: '#e07560', bg: '#fdf2ef' },
-  '숙박':  { color: 'var(--cp, #436440)', bg: '#f2f6f2' },
+  '숙박':  { color: 'var(--cp, #436440)', bg: 'var(--ci, #edf4ec)' },
   '교통':  { color: '#5b7fa6', bg: '#eff4fa' },
   '쇼핑':  { color: '#c4963a', bg: '#fdf7ed' },
   '관광':  { color: '#8b5cf6', bg: '#f5f3ff' },
@@ -165,7 +165,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
   const inp = (label, key, type='text', placeholder='') => (
     <div style={{ marginBottom:'12px' }}>
-      <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>{label}</p>
+      <p style={{ fontSize:'11px', fontWeight:600, color:'var(--cm, #6b9466)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>{label}</p>
       <input type={type} value={form[key]} placeholder={placeholder}
         onChange={e => key==='item' ? handleItem(e.target.value) : setForm(f=>({...f,[key]:e.target.value}))}
         style={{ width:'100%', padding:'10px 12px', borderRadius:'12px', border:'1.5px solid #e5e7eb', fontSize:'14px', color:'#111827', outline:'none', boxSizing:'border-box', backgroundColor:'#fafaf8' }}
@@ -190,7 +190,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
         {/* 카테고리 */}
         <div style={{ marginBottom:'12px' }}>
-          <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>카테고리</p>
+          <p style={{ fontSize:'11px', fontWeight:600, color:'var(--cm, #6b9466)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>카테고리</p>
           <button onClick={()=>setShowCatPicker(true)} style={{
             display:'flex', alignItems:'center', gap:'8px', width:'100%',
             padding:'10px 12px', borderRadius:'12px', border:'1.5px solid #e5e7eb',
@@ -203,7 +203,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
         {/* 통화 + 금액 */}
         <div style={{ marginBottom:'12px' }}>
-          <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>통화 · 현지 금액</p>
+          <p style={{ fontSize:'11px', fontWeight:600, color:'var(--cm, #6b9466)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>통화 · 현지 금액</p>
           <div style={{ display:'flex', gap:'8px' }}>
             <select value={form.currency} onChange={e=>handleCurrency(e.target.value)}
               style={{ padding:'10px 8px', borderRadius:'12px', border:'1.5px solid #e5e7eb', fontSize:'14px', color:'#111827', background:'#fafaf8', cursor:'pointer' }}>
@@ -219,7 +219,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
         {/* 원화 환산 금액 (외화일 때만) */}
         {form.currency !== 'KRW' && (
           <div style={{ marginBottom:'12px' }}>
-            <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>원화 환산 금액</p>
+            <p style={{ fontSize:'11px', fontWeight:600, color:'var(--cm, #6b9466)', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>원화 환산 금액</p>
             <input type="number" value={form.krwOverride !== '' ? form.krwOverride : (autoKRW || '')}
               placeholder={autoKRW ? String(autoKRW) : '자동 계산'}
               onChange={e => setForm(f=>({...f, krwOverride: e.target.value}))}
@@ -269,7 +269,7 @@ function ExpenseCard({ expense, catOverrides, onCatChange }) {
   return (
     <>
       <div onClick={() => setOpen(o => !o)}
-        style={{ backgroundColor:'#fff', borderRadius:'16px', padding:'12px 14px', boxShadow:'0 1px 6px rgba(67,100,64,0.06)', cursor:'pointer' }}>
+        style={{ backgroundColor:'#fff', borderRadius:'16px', padding:'12px 14px', boxShadow:'0 1px 6px rgba(var(--cp-rgb, 67,100,64),0.06)', cursor:'pointer' }}>
         <div style={{ display:'flex', alignItems:'center', gap:'10px' }}>
           {/* 아이콘 — 탭하면 카테고리 피커 */}
           <div onClick={e => { e.stopPropagation(); setShowPicker(true); }}
@@ -371,7 +371,7 @@ function FilterChips({ selected, onChange, expenses, catOverrides }) {
             <button key={c.key} onClick={() => onChange(c.key)} style={{
               flexShrink:0, padding:'6px 14px', borderRadius:'999px', fontSize:'12px',
               fontWeight: active ? 600 : 400, border:'none', cursor:'pointer',
-              backgroundColor: active ? (CAT[c.key]?.color || 'var(--cp, #436440)') : '#f2f6f2',
+              backgroundColor: active ? (CAT[c.key]?.color || 'var(--cp, #436440)') : 'var(--ci, #edf4ec)',
               color: active ? '#fff' : 'var(--cp, #436440)', transition:'all 0.15s',
             }}>
               {c.label}{counts[c.key] ? ` ${counts[c.key]}` : ''}
@@ -399,7 +399,7 @@ function CategoryChart({ expenses, catOverrides }) {
   if (!total) return null;
 
   return (
-    <div style={{ backgroundColor:'#fff', borderRadius:'20px', padding:'14px 16px', margin:'0 16px', boxShadow:'0 2px 12px rgba(67,100,64,0.07)' }}>
+    <div style={{ backgroundColor:'#fff', borderRadius:'20px', padding:'14px 16px', margin:'0 16px', boxShadow:'0 2px 12px rgba(var(--cp-rgb, 67,100,64),0.07)' }}>
       <p style={{ fontSize:'12px', fontWeight:700, color:'#111827', margin:'0 0 10px' }}>카테고리별 지출</p>
       <div style={{ display:'flex', alignItems:'center', gap:'12px' }}>
         <div style={{ flex:'0 0 100px', height:100 }}>
@@ -506,8 +506,8 @@ export default function BudgetTab({ sheetId, expenseGid, active }) {
           </p>
           <p style={{ fontSize:'10px', color:'rgba(255,255,255,0.55)', margin:'4px 0 0' }}>{allExpenses.length}건</p>
         </div>
-        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#fff', padding:'14px 16px', boxShadow:'0 2px 10px rgba(67,100,64,0.07)' }}>
-          <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase' }}>오늘 지출</p>
+        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#fff', padding:'14px 16px', boxShadow:'0 2px 10px rgba(var(--cp-rgb, 67,100,64),0.07)' }}>
+          <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'var(--cm, #6b9466)', margin:'0 0 4px', textTransform:'uppercase' }}>오늘 지출</p>
           <p style={{ fontSize:'20px', fontWeight:800, margin:0, color:'#111827', letterSpacing:'-0.02em', lineHeight:1.2 }}>
             {fmtKRW(todayKRW)}
           </p>

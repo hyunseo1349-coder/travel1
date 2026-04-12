@@ -26,7 +26,7 @@ function AppBar({ onMenuClick, activeTab }) {
         {/* 햄버거 */}
         <button
           onClick={onMenuClick}
-          style={{ width: 34, height: 34, borderRadius: '10px', backgroundColor: '#f2f6f2', border: 'none', color: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+          style={{ width: 34, height: 34, borderRadius: '10px', backgroundColor: 'var(--ci, #edf4ec)', border: 'none', color: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
           aria-label="메뉴"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

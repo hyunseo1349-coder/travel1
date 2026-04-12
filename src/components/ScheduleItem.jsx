@@ -16,7 +16,7 @@ function TimeCell({ time }) {
       {parts.length >= 2 ? (
         <>
           <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp, #436440)', lineHeight: 1.3, textAlign: 'right' }}>{parts[0]}</span>
-          <span style={{ fontSize: '9px', color: '#8faa8d', lineHeight: 1 }}>↓</span>
+          <span style={{ fontSize: '9px', color: 'var(--cm, #6b9466)', lineHeight: 1 }}>↓</span>
           <span style={{ fontSize: '11px', fontWeight: 600, color: 'var(--cp, #436440)', lineHeight: 1.3, textAlign: 'right' }}>{parts[parts.length - 1]}</span>
         </>
       ) : (
@@ -46,7 +46,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
         <div style={{ width: 48, flexShrink: 0, display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
           <TimeCell time={item.time} />
           {!isLast && (
-            <div style={{ flex: 1, width: 1, backgroundColor: '#c2d5c1', marginTop: '6px', minHeight: '16px' }} />
+            <div style={{ flex: 1, width: 1, backgroundColor: 'var(--cl, #dff0db)', marginTop: '6px', minHeight: '16px' }} />
           )}
         </div>
 
@@ -97,7 +97,7 @@ export default function ScheduleItem({ item, index, isLast, onSelect }) {
               </button>
 
               {/* 화살표 (상세 이동 힌트) */}
-              <div style={{ flexShrink: 0, color: '#c2d5c1' }}>
+              <div style={{ flexShrink: 0, color: 'var(--cl, #dff0db)' }}>
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M9 18l6-6-6-6" />
                 </svg>

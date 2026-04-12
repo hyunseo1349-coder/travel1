@@ -348,7 +348,7 @@ function ItinerarySummary({ days, expenses }) {
 
       <div style={{ position:'relative' }}>
         {/* 타임라인 세로선 */}
-        <div style={{ position:'absolute', left:26, top:8, bottom:8, width:1, backgroundColor:'#e0ecdf' }} />
+        <div style={{ position:'absolute', left:26, top:8, bottom:8, width:1, backgroundColor:'var(--cl, #dff0db)' }} />
 
         <div style={{ display:'flex', flexDirection:'column', gap:'0' }}>
           {days.map((day, idx) => {
@@ -407,7 +407,7 @@ function ItinerarySummary({ days, expenses }) {
                       ))}
                     </div>
                   ) : (
-                    <p style={{ fontSize:'11px', color:'#c5d6c4', margin:0, fontStyle:'italic' }}>이동일</p>
+                    <p style={{ fontSize:'11px', color:'var(--cl, #dff0db)', margin:0, fontStyle:'italic' }}>이동일</p>
                   )}
                 </div>
               </div>

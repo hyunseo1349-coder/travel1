@@ -91,17 +91,17 @@ function FieldRow({ field, editValue, onSave }) {
         onClick={handleEdit}
         style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
       >
-        <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f9faf9', color: '#c5d6c4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f9faf9', color: 'var(--cl, #dff0db)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Icon />
         </div>
-        <p style={{ fontSize: '13px', color: '#c5d6c4', margin: 0 }}>{field.label} 입력...</p>
+        <p style={{ fontSize: '13px', color: 'var(--cl, #dff0db)', margin: 0 }}>{field.label} 입력...</p>
       </div>
     );
   }
 
   return (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px 0', borderBottom: '1px solid #f3f4f6' }}>
-      <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f2f6f2', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+      <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: 'var(--ci, #edf4ec)', color: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <Icon />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
@@ -112,7 +112,7 @@ function FieldRow({ field, editValue, onSave }) {
           {!editing && (
             <button
               onClick={handleEdit}
-              style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: '#f2f6f2', border: 'none', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+              style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: 'var(--ci, #edf4ec)', border: 'none', color: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
               aria-label="편집"
             >
               <IcoPencil />
@@ -130,7 +130,7 @@ function FieldRow({ field, editValue, onSave }) {
               style={{
                 width: '100%', boxSizing: 'border-box',
                 padding: '10px 12px', borderRadius: '10px',
-                border: '1.5px solid #436440', fontSize: '14px', lineHeight: '1.6',
+                border: '1.5px solid var(--cp, #436440)', fontSize: '14px', lineHeight: '1.6',
                 color: '#1f2937', resize: 'vertical', outline: 'none',
                 fontFamily: 'inherit', backgroundColor: '#fafdf9',
               }}
@@ -145,7 +145,7 @@ function FieldRow({ field, editValue, onSave }) {
               <button
                 onClick={handleSave}
                 disabled={saving}
-                style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', backgroundColor: '#436440', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1 }}
+                style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', backgroundColor: 'var(--cp, #436440)', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1 }}
               >
                 {saving ? '저장 중...' : '저장'}
               </button>
@@ -156,7 +156,7 @@ function FieldRow({ field, editValue, onSave }) {
             <a
               href={displayValue.startsWith('http') ? displayValue : `https://${displayValue}`}
               target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: '14px', color: '#436440', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5' }}
+              style={{ fontSize: '14px', color: 'var(--cp, #436440)', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5' }}
             >
               {displayValue}
             </a>
@@ -293,7 +293,7 @@ export default function DetailPage({ item, onBack }) {
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: '14px' }}>
             <div style={{
               width: 48, height: 48, borderRadius: '15px',
-              backgroundColor: '#f2f6f2', color: '#436440',
+              backgroundColor: 'var(--ci, #edf4ec)', color: 'var(--cp, #436440)',
               display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
             }}>
               {(() => { const Icon = getActivityIcon(item.schedule, item.content); return <Icon />; })()}
@@ -307,7 +307,7 @@ export default function DetailPage({ item, onBack }) {
                 {item.schedule}
               </h2>
               {timeLabel && (
-                <p style={{ fontSize: '13px', color: '#436440', fontWeight: 600, margin: '6px 0 0' }}>
+                <p style={{ fontSize: '13px', color: 'var(--cp, #436440)', fontWeight: 600, margin: '6px 0 0' }}>
                   {timeLabel}
                 </p>
               )}
