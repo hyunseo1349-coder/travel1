@@ -355,7 +355,7 @@ function ItinerarySummary({ days, expenses }) {
             const pd    = day.parsedDate;
             const spots = day.items.filter(i => isTouristSpot(i.schedule));
             // 경비 시트 도시 우선, 없으면 일정 텍스트에서 추출
-            const city  = getCityFromExpenses(expenses, pd) || getDayCity(day.items);
+            const city  = getDayCity(day.items) || getCityFromExpenses(expenses, pd);
             const today = isActualToday(pd);
             const isPast= pd && (() => { const d=new Date(pd.year,pd.month-1,pd.day); const n=new Date(); n.setHours(0,0,0,0); return d<n; })();
 
