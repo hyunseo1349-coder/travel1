@@ -118,7 +118,7 @@ function TripForm({ initial, onSave, onCancel, onDelete }) {
           <button onClick={onCancel} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1.5px solid #e5e7eb', backgroundColor: '#fff', color: '#6b7280', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
             취소
           </button>
-          <button onClick={handleSave} style={{ flex: 2, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#436440', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+          <button onClick={handleSave} style={{ flex: 2, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: '#374151', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
             저장
           </button>
         </div>
@@ -176,7 +176,7 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
         {/* 헤더 */}
         <div style={{ padding: '52px 20px 14px', borderBottom: '1px solid #f0f0ee', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontFamily: "'Noto Serif KR',serif", fontSize: '15px', fontWeight: 700, color: '#1a2e1a' }}>내 여행</span>
-          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', backgroundColor: '#f2f6f2', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
+          <button onClick={onClose} style={{ width: 28, height: 28, borderRadius: '50%', border: 'none', backgroundColor: '#f0f0f0', color: '#6b7280', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer' }}>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
@@ -196,19 +196,19 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
                       onClick={() => { onSelect(trip.id); onClose(); }}
                       style={{
                         flex: 1, textAlign: 'left', padding: '9px 8px', border: 'none',
-                        backgroundColor: active ? '#f0f7f0' : 'transparent',
+                        backgroundColor: active ? '#f0f0f0' : 'transparent',
                         borderRadius: '10px', cursor: 'pointer',
-                        color: active ? '#436440' : '#374151',
+                        color: active ? '#111827' : '#374151',
                         fontSize: '14px', fontWeight: active ? 700 : 400,
                         display: 'flex', alignItems: 'center', gap: '8px',
                       }}
                     >
-                      {active && <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#436440', flexShrink: 0 }} />}
+                      {active && <span style={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: '#374151', flexShrink: 0 }} />}
                       {trip.level2 || trip.level1 || '이름 없는 여행'}
                     </button>
                     <button
                       onClick={() => setEditing(trip)}
-                      style={{ width: 26, height: 26, borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#c5d6c4', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+                      style={{ width: 26, height: 26, borderRadius: '8px', border: 'none', backgroundColor: 'transparent', color: '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
                     >
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
                     </button>
@@ -223,7 +223,7 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
         <div style={{ padding: '10px 14px 24px', borderTop: '1px solid #f0f0ee' }}>
           <button
             onClick={() => setEditing('new')}
-            style={{ width: '100%', padding: '11px', borderRadius: '12px', border: '1.5px dashed #c5d6c4', backgroundColor: 'transparent', color: '#436440', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+            style={{ width: '100%', padding: '11px', borderRadius: '12px', border: '1.5px dashed #d1d5db', backgroundColor: 'transparent', color: '#6b7280', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             여행 추가
