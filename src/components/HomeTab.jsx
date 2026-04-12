@@ -158,11 +158,12 @@ function detectWeatherCity(days, todayIdx) {
   for (let i = todayIdx; i >= Math.max(0, todayIdx-1); i--) {
     const day = days[i];
     if (!day) continue;
-    const route = extractRoute(day.items);
-    if (route.includes('→')) {
-      const dest = route.split('→')[1].trim().replace(/\([A-Z]+\)/g,'').trim().split(/\s+/)[0];
+    const city = getDayCity(day.items);
+    if (city.includes('→')) {
+      const dest = city.split('→')[1].trim().split(/\s+/)[0];
       if (dest) return dest;
     }
+    if (city) return city;
     const loc = day.items.map(it => it.location).filter(Boolean)[0];
     if (loc) return loc.split(/[,·]/)[0].trim();
   }
