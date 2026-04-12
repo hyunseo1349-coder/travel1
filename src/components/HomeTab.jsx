@@ -208,13 +208,13 @@ function HeroSection({ trip, days, tripId }) {
         ) : !imgErr2 ? (
           <img src={srcFallbk} alt="" style={{ width:'100%', height:'100%', objectFit:'cover' }} onError={() => setImgErr2(true)} />
         ) : (
-          <div style={{ width:'100%', height:'100%', background:'linear-gradient(135deg,#2d5a27,#436440,#6b9466)' }} />
+          <div style={{ width:'100%', height:'100%', background:'linear-gradient(135deg, color-mix(in srgb,var(--cp,#436440) 65%,#000), var(--cp,#436440), var(--cm,#6b9466))' }} />
         )}
 
         <div style={{ position:'absolute', inset:0, background:'linear-gradient(to top, rgba(0,0,0,0.82) 0%, rgba(0,0,0,0.1) 55%, transparent 100%)' }} />
 
         {dDay !== null && (
-          <div style={{ position:'absolute', top:14, right:14, backgroundColor: dDay<=0?'#436440':'rgba(255,255,255,0.92)', color: dDay<=0?'#fff':'#436440', fontSize:'11px', fontWeight:800, padding:'4px 12px', borderRadius:'999px' }}>
+          <div style={{ position:'absolute', top:14, right:14, backgroundColor: dDay<=0?'var(--cp, #436440)':'rgba(255,255,255,0.92)', color: dDay<=0?'#fff':'var(--cp, #436440)', fontSize:'11px', fontWeight:800, padding:'4px 12px', borderRadius:'999px' }}>
             {dDay>0 ? `D-${dDay}` : dDay===0 ? 'D-Day' : `D+${Math.abs(dDay)}`}
           </div>
         )}
@@ -280,15 +280,15 @@ function TripAtAGlance({ days, expenses }) {
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'8px' }}>
         {cells.map(({ Icon, label, value, sub }) => (
-          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'14px', padding:'10px 12px' }}>
+          <div key={label} style={{ backgroundColor:'var(--cc, #f8faf8)', borderRadius:'14px', padding:'10px 12px' }}>
             <div style={{ display:'flex', alignItems:'center', gap:'6px', marginBottom:'5px' }}>
-              <div style={{ width:22, height:22, borderRadius:'7px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
+              <div style={{ width:22, height:22, borderRadius:'7px', backgroundColor:'var(--ci, #edf4ec)', color:'var(--cp, #436440)', display:'flex', alignItems:'center', justifyContent:'center', flexShrink:0 }}>
                 <Icon />
               </div>
               <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:0, lineHeight:1 }}>{label}</p>
             </div>
             <p style={{ fontFamily:"'Noto Serif KR','Noto Serif',Georgia,serif", fontSize:'17px', fontWeight:700, color:'#1f2937', margin:0, letterSpacing:'-0.01em', lineHeight:1.2, wordBreak:'break-all' }}>{value}</p>
-            {sub && <p style={{ fontSize:'10px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
+            {sub && <p style={{ fontSize:'10px', fontWeight:600, color:'var(--cm, #6b9466)', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
       </div>
@@ -368,12 +368,12 @@ function ItinerarySummary({ days, expenses }) {
                   <div style={{
                     width:52, height:54, borderRadius:'18px',
                     display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center',
-                    backgroundColor: today ? '#436440' : '#dff0db',
-                    boxShadow: today ? '0 2px 10px rgba(67,100,64,0.35)' : 'none',
+                    backgroundColor: today ? 'var(--cp, #436440)' : 'var(--cl, #dff0db)',
+                    boxShadow: today ? '0 2px 10px rgba(var(--cp-rgb, 67,100,64),0.35)' : 'none',
                   }}>
                     {pd ? (
                       <>
-                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:800, color: today?'#fff':'#2d6b2a', margin:0, lineHeight:1.2 }}>
+                        <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:800, color: today?'#fff':'var(--cm, #6b9466)', margin:0, lineHeight:1.2 }}>
                           {String(pd.month).padStart(2,'0')}/{String(pd.day).padStart(2,'0')}
                         </p>
                         <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'10px', fontWeight:600, color: today?'rgba(255,255,255,0.8)':'#5a9458', margin:0 }}>
@@ -381,7 +381,7 @@ function ItinerarySummary({ days, expenses }) {
                         </p>
                       </>
                     ) : (
-                      <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:700, color: today?'#fff':'#2d6b2a', margin:0 }}>
+                      <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter',sans-serif", fontSize:'11px', fontWeight:700, color: today?'#fff':'var(--cm, #6b9466)', margin:0 }}>
                         D{day.seqNumber}
                       </p>
                     )}
@@ -391,15 +391,15 @@ function ItinerarySummary({ days, expenses }) {
                 {/* 일정 내용 */}
                 <div style={{ flex:1, minWidth:0, paddingTop:'7px' }}>
                   {/* 도시 (경비 시트 참조, 항상 상단에) */}
-                  <p style={{ fontSize:'12px', fontWeight:700, color: today?'#436440':'#374151', margin:'0 0 4px', display:'flex', alignItems:'center', gap:'4px' }}>
-                    {today && <span style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'#436440', flexShrink:0, display:'inline-block' }} />}
+                  <p style={{ fontSize:'12px', fontWeight:700, color: today?'var(--cp, #436440)':'#374151', margin:'0 0 4px', display:'flex', alignItems:'center', gap:'4px' }}>
+                    {today && <span style={{ width:5, height:5, borderRadius:'50%', backgroundColor:'var(--cp, #436440)', flexShrink:0, display:'inline-block' }} />}
                     {city || '—'}
                   </p>
                   {spots.length > 0 ? (
                     <div style={{ display:'flex', flexDirection:'column', gap:'1px' }}>
                       {spots.map((item, i) => (
                         <div key={i} style={{ display:'flex', alignItems:'flex-start', gap:'5px' }}>
-                          <span style={{ color: today?'#436440':'#c5d6c4', fontSize:'11px', lineHeight:'1.5', flexShrink:0 }}>•</span>
+                          <span style={{ color: today?'var(--cp, #436440)':'#c5d6c4', fontSize:'11px', lineHeight:'1.5', flexShrink:0 }}>•</span>
                           <p style={{ fontSize:'12px', color: isPast?'#b0bab0':'#4b5563', margin:0, lineHeight:'1.5', wordBreak:'keep-all' }}>
                             {item.schedule}
                           </p>
@@ -486,7 +486,7 @@ function WeatherCard({ days, todayIdx, tripId }) {
 
   return (
     <div style={{ padding:'0 0 4px' }}>
-      <div style={{ backgroundColor:'#436440', borderRadius:'20px', padding:'20px', margin:'0' }}>
+      <div style={{ backgroundColor:'var(--cp, #436440)', borderRadius:'20px', padding:'20px', margin:'0' }}>
         {/* 헤더 */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'14px' }}>
           <p style={{ color:'rgba(255,255,255,0.75)', fontSize:'12px', fontWeight:600, margin:0, letterSpacing:'0.05em' }}>Destination Weather</p>
@@ -568,7 +568,7 @@ function WeatherCard({ days, todayIdx, tripId }) {
 function Spinner() {
   return (
     <div style={{ flex:1, display:'flex', alignItems:'center', justifyContent:'center' }}>
-      <div className="animate-spin" style={{ width:26, height:26, borderRadius:'50%', border:'3px solid #f0f0ee', borderTopColor:'#436440' }} />
+      <div className="animate-spin" style={{ width:26, height:26, borderRadius:'50%', border:'3px solid #f0f0ee', borderTopColor:'var(--cp, #436440)' }} />
     </div>
   );
 }
@@ -596,7 +596,7 @@ export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseShe
       {/* Pull-to-refresh 인디케이터 */}
       {(pullDist > 0 || refreshing) && (
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden', backgroundColor:'#f0f2ee', flexShrink:0 }}>
-          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'var(--cp, #436440)', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
         </div>
       )}
 

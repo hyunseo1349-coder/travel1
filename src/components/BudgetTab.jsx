@@ -6,7 +6,7 @@ import { usePullToRefresh } from '../hooks/usePullToRefresh.js';
 // ─── 카테고리 메타 ────────────────────────────────────────────────────────────
 const CAT = {
   '식비':  { color: '#e07560', bg: '#fdf2ef' },
-  '숙박':  { color: '#436440', bg: '#f2f6f2' },
+  '숙박':  { color: 'var(--cp, #436440)', bg: '#f2f6f2' },
   '교통':  { color: '#5b7fa6', bg: '#eff4fa' },
   '쇼핑':  { color: '#c4963a', bg: '#fdf7ed' },
   '관광':  { color: '#8b5cf6', bg: '#f5f3ff' },
@@ -236,7 +236,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
         <button onClick={handleSubmit} disabled={!form.item || !form.amount} style={{
           width:'100%', padding:'14px', borderRadius:'16px', border:'none',
-          backgroundColor: form.item && form.amount ? '#436440' : '#d1d5db',
+          backgroundColor: form.item && form.amount ? 'var(--cp, #436440)' : '#d1d5db',
           color:'#fff', fontSize:'15px', fontWeight:700, cursor: form.item && form.amount ? 'pointer' : 'default',
           marginTop:'4px',
         }}>
@@ -336,7 +336,7 @@ function DateGroup({ group, catOverrides, onCatChange }) {
   return (
     <div style={{ marginBottom:'20px' }}>
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:'8px', padding:'0 2px' }}>
-        <p style={{ fontSize:'11px', fontWeight:700, color:'#436440', margin:0 }}>
+        <p style={{ fontSize:'11px', fontWeight:700, color:'var(--cp, #436440)', margin:0 }}>
           {fmtDateHeader(group.date)}{group.country ? ` · ${group.country}` : ''}
         </p>
         <p style={{ fontSize:'11px', fontWeight:600, color:'#6b7280', margin:0 }}>{fmtKRW(group.total)}</p>
@@ -371,8 +371,8 @@ function FilterChips({ selected, onChange, expenses, catOverrides }) {
             <button key={c.key} onClick={() => onChange(c.key)} style={{
               flexShrink:0, padding:'6px 14px', borderRadius:'999px', fontSize:'12px',
               fontWeight: active ? 600 : 400, border:'none', cursor:'pointer',
-              backgroundColor: active ? (CAT[c.key]?.color || '#436440') : '#f2f6f2',
-              color: active ? '#fff' : '#436440', transition:'all 0.15s',
+              backgroundColor: active ? (CAT[c.key]?.color || 'var(--cp, #436440)') : '#f2f6f2',
+              color: active ? '#fff' : 'var(--cp, #436440)', transition:'all 0.15s',
             }}>
               {c.label}{counts[c.key] ? ` ${counts[c.key]}` : ''}
             </button>
@@ -447,7 +447,7 @@ function ErrorState({ message }) {
     <div style={{ flex:1, display:'flex', flexDirection:'column', alignItems:'center', justifyContent:'center', gap:12, padding:'0 32px', textAlign:'center' }}>
       <p style={{ fontWeight:700, color:'#111827', margin:0 }}>데이터를 불러올 수 없어요</p>
       <p style={{ fontSize:'13px', color:'#6b7280', margin:0 }}>{message}</p>
-      <button onClick={() => window.location.reload()} style={{ padding:'10px 24px', borderRadius:'999px', backgroundColor:'#436440', color:'#fff', fontSize:'14px', fontWeight:600, border:'none', cursor:'pointer' }}>다시 시도</button>
+      <button onClick={() => window.location.reload()} style={{ padding:'10px 24px', borderRadius:'999px', backgroundColor:'var(--cp, #436440)', color:'#fff', fontSize:'14px', fontWeight:600, border:'none', cursor:'pointer' }}>다시 시도</button>
     </div>
   );
 }
@@ -493,13 +493,13 @@ export default function BudgetTab({ sheetId, expenseGid, active }) {
       {/* Pull-to-refresh 인디케이터 */}
       {(pullDist > 0 || refreshing) && (
         <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden', backgroundColor:'#fafaf8', flexShrink:0 }}>
-          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+          <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'var(--cp, #436440)', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
         </div>
       )}
 
       {/* ── 상단 요약 카드 ── */}
       <div style={{ margin:'14px 16px 10px', display:'flex', gap:'10px' }}>
-        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#436440', padding:'14px 16px' }}>
+        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'var(--cp, #436440)', padding:'14px 16px' }}>
           <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'rgba(255,255,255,0.7)', margin:'0 0 4px', textTransform:'uppercase' }}>총 지출</p>
           <p style={{ fontSize:'20px', fontWeight:800, margin:0, color:'#fff', letterSpacing:'-0.02em', lineHeight:1.2 }}>
             {fmtKRW(totalKRW)}
@@ -528,7 +528,7 @@ export default function BudgetTab({ sheetId, expenseGid, active }) {
         <p style={{ fontSize:'13px', fontWeight:700, color:'#111827', margin:0 }}>내역</p>
         <button onClick={() => setShowAdd(true)} style={{
           display:'flex', alignItems:'center', gap:'4px', padding:'6px 12px',
-          borderRadius:'999px', backgroundColor:'#436440', color:'#fff',
+          borderRadius:'999px', backgroundColor:'var(--cp, #436440)', color:'#fff',
           border:'none', cursor:'pointer', fontSize:'12px', fontWeight:600,
         }}>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">

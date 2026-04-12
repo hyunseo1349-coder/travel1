@@ -1,16 +1,19 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import HomeTab from './components/HomeTab.jsx';
 import DailyScheduleTab from './components/DailyScheduleTab.jsx';
 import DetailPage from './components/DetailPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BudgetTab from './components/BudgetTab.jsx';
+import SettingsTab from './components/SettingsTab.jsx';
 import Drawer, { loadTrips, loadActiveId, saveActiveId } from './components/Drawer.jsx';
+import { applyTheme, loadThemeId } from './theme.js';
 
 // ─── 탭별 헤더 타이틀 ────────────────────────────────────────────────────────
 const TAB_TITLES = {
   home:     'Summary',
   schedule: 'Daily Schedule',
   budget:   'Expense',
+  settings: 'Settings',
 };
 
 // ─── 앱 상단 바 ──────────────────────────────────────────────────────────────
@@ -22,7 +25,7 @@ function AppBar({ onMenuClick, activeTab }) {
         {/* 햄버거 */}
         <button
           onClick={onMenuClick}
-          style={{ width: 34, height: 34, borderRadius: '10px', backgroundColor: '#f2f6f2', border: 'none', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+          style={{ width: 34, height: 34, borderRadius: '10px', backgroundColor: '#f2f6f2', border: 'none', color: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
           aria-label="메뉴"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -35,7 +38,7 @@ function AppBar({ onMenuClick, activeTab }) {
           {title}
         </span>
       </div>
-      <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: 'var(--cp, #436440)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none">
           <path d="M12 2C8 2 5 6 5 10c0 5.25 7 12 7 12s7-6.75 7-12c0-4-3-8-7-8zm0 10.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
         </svg>
@@ -52,6 +55,11 @@ export default function App() {
   const [activeTab,    setActiveTab]    = useState('home');
   const [detailItem,   setDetailItem]   = useState(null);
   const [detailVisible,setDetailVisible]= useState(false);
+  const [themeId,      setThemeId]      = useState(loadThemeId);
+
+  useEffect(() => { applyTheme(themeId); }, [themeId]);
+
+  const handleThemeChange = (id) => { applyTheme(id); setThemeId(id); };
 
   const activeTrip = trips.find(t => t.id === activeId) || trips[0] || {};
 
@@ -112,6 +120,9 @@ export default function App() {
               expenseGid={activeTrip.expenseGid}
               active={activeTab === 'budget'}
             />
+          </div>
+          <div style={{ position:'absolute', inset:0, display:'flex', flexDirection:'column', visibility: activeTab==='settings' ? 'visible' : 'hidden', pointerEvents: activeTab==='settings' ? 'auto' : 'none', overflowY:'auto' }}>
+            <SettingsTab activeThemeId={themeId} onThemeChange={handleThemeChange} />
           </div>
         </div>
 

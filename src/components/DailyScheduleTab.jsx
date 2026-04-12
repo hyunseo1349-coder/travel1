@@ -44,8 +44,8 @@ function DayTabBar({ days, currentIndex, onChange }) {
             scrollSnapAlign: 'start', flexShrink: 0, borderRadius: '999px',
             padding: '6px 16px', fontSize: '12px', fontWeight: active ? 600 : 400,
             transition: 'all 0.2s',
-            backgroundColor: active ? '#436440' : '#f2f6f2',
-            color: active ? '#fff' : '#436440',
+            backgroundColor: active ? 'var(--cp, #436440)' : '#f2f6f2',
+            color: active ? '#fff' : 'var(--cp, #436440)',
             border: 'none', cursor: 'pointer', whiteSpace: 'nowrap',
           }}>
             {day.seqNumber}일차
@@ -61,7 +61,7 @@ function DayHeader({ day, onPrev, onNext, hasPrev, hasNext }) {
   return (
     <div className="px-5 pt-2 pb-3 flex items-start justify-between">
       <div style={{ flex: 1, minWidth: 0, paddingRight: '8px' }}>
-        <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.12em', color: '#436440', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", margin: 0 }}>
+        <p style={{ fontSize: '11px', fontWeight: 500, letterSpacing: '0.12em', color: 'var(--cp, #436440)', textTransform: 'uppercase', fontFamily: "'Inter',sans-serif", margin: 0 }}>
           {buildDayLabel(day) || '\u00a0'}
         </p>
         <h1 style={{
@@ -80,7 +80,7 @@ function DayHeader({ day, onPrev, onNext, hasPrev, hasNext }) {
           <button key={label} onClick={onClick} disabled={!show} aria-label={`${label} 날`} style={{
             width: 34, height: 34, borderRadius: '50%', border: 'none',
             backgroundColor: show ? '#f2f6f2' : 'transparent',
-            color: show ? '#436440' : '#d1d5db',
+            color: show ? 'var(--cp, #436440)' : '#d1d5db',
             display: 'flex', alignItems: 'center', justifyContent: 'center',
             cursor: show ? 'pointer' : 'default', transition: 'background 0.15s',
           }}>
@@ -99,7 +99,7 @@ function ErrorState({ message }) {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-4">
       <div style={{ width: 60, height: 60, backgroundColor: '#f2f6f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#436440" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--cp, #436440)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
         </svg>
       </div>
@@ -108,7 +108,7 @@ function ErrorState({ message }) {
         <p className="text-sm text-gray-500">{message}</p>
         <p className="text-xs text-gray-400 mt-1">시트가 '공개' 상태인지 확인해 주세요.</p>
       </div>
-      <button onClick={() => window.location.reload()} style={{ padding: '10px 24px', borderRadius: '999px', backgroundColor: '#436440', color: '#fff', fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
+      <button onClick={() => window.location.reload()} style={{ padding: '10px 24px', borderRadius: '999px', backgroundColor: 'var(--cp, #436440)', color: '#fff', fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
         다시 시도
       </button>
     </div>
@@ -119,7 +119,7 @@ function EmptyState() {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-8 text-center gap-3">
       <div style={{ width: 60, height: 60, backgroundColor: '#f2f6f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#436440" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="var(--cp, #436440)" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
           <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
         </svg>
       </div>
@@ -172,7 +172,7 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
         {/* Pull-to-refresh 인디케이터 */}
         {(pullDist > 0 || refreshing) && (
           <div style={{ display:'flex', alignItems:'center', justifyContent:'center', height: refreshing ? 44 : pullDist, overflow:'hidden' }}>
-            <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'#436440', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
+            <div className={refreshing ? 'animate-spin' : ''} style={{ width:22, height:22, borderRadius:'50%', border:'2.5px solid #dceadc', borderTopColor:'var(--cp, #436440)', opacity: refreshing ? 1 : Math.min(pullDist/60,1), transform: refreshing ? undefined : `rotate(${Math.min(pullDist/60,1)*300}deg)` }} />
           </div>
         )}
         {day.items.length === 0 ? <EmptyState /> : (
