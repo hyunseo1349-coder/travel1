@@ -2,6 +2,7 @@ import { useState } from 'react';
 import DailyScheduleTab from './components/DailyScheduleTab.jsx';
 import DetailPage from './components/DetailPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
+import BudgetTab from './components/BudgetTab.jsx';
 
 // ─── 앱 상단 바 ──────────────────────────────────────────────────────────────
 function AppBar() {
@@ -89,13 +90,7 @@ export default function App() {
               </svg>
             } />
           )}
-          {activeTab === 'budget' && (
-            <PlaceholderTab label="예산" icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#436440" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/>
-              </svg>
-            } />
-          )}
+          {activeTab === 'budget' && <BudgetTab />}
         </div>
 
         {/* 하단 네비게이션 */}
