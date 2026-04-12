@@ -463,7 +463,7 @@ export default function BudgetTab({ sheetId, expenseGid, active }) {
   // 탭 전환 시 자동 새로고침
   useEffect(() => {
     if (active) refetch();
-  }, [active]);
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 시트 + 수동 합산 (금액 있는 것만)
   const allExpenses = useMemo(() =>

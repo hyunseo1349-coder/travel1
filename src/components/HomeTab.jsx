@@ -427,11 +427,16 @@ function WeatherCard({ days, todayIdx, tripId }) {
   const [draft,      setDraft]      = useState('');
   const [detecting,  setDetecting]  = useState(false);
 
+  // scheduleCity 최신값을 ref로 유지 (geolocation 콜백의 stale closure 방지)
+  const scheduleCityRef = useRef(scheduleCity);
+  useEffect(() => { scheduleCityRef.current = scheduleCity; }, [scheduleCity]);
+
   // 위치 자동 인식 (localStorage 수동 설정 없을 때만)
   useEffect(() => {
     if (loadWxCity(tripId)) return; // 수동 설정 있으면 건너뜀
+    let cancelled = false;
     if (!navigator.geolocation) {
-      if (scheduleCity) setCity(scheduleCity);
+      if (scheduleCityRef.current) setCity(scheduleCityRef.current);
       return;
     }
     setDetecting(true);
@@ -441,21 +446,22 @@ function WeatherCard({ days, todayIdx, tripId }) {
           const res  = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&accept-language=en`);
           const data = await res.json();
           const name = data.address?.city || data.address?.town || data.address?.village || '';
-          const resolved = name || scheduleCity;
-          if (resolved) { setCity(resolved); saveWxCity(tripId, resolved); }
+          const resolved = name || scheduleCityRef.current;
+          if (resolved && !cancelled) { setCity(resolved); saveWxCity(tripId, resolved); }
         } catch {
-          if (scheduleCity) setCity(scheduleCity);
+          if (scheduleCityRef.current && !cancelled) setCity(scheduleCityRef.current);
         }
-        setDetecting(false);
+        if (!cancelled) setDetecting(false);
       },
       () => {
         // 권한 거부 → 일정 기반 도시로 폴백
-        if (scheduleCity && !city) setCity(scheduleCity);
-        setDetecting(false);
+        if (scheduleCityRef.current && !cancelled) setCity(scheduleCityRef.current);
+        if (!cancelled) setDetecting(false);
       },
       { timeout: 8000 }
     );
-  }, [tripId]);
+    return () => { cancelled = true; };
+  }, [tripId]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { data, loading } = useWeather(city);
 

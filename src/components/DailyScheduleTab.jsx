@@ -139,7 +139,7 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
   // 탭 전환 시 자동 새로고침
   useEffect(() => {
     if (active) refetch();
-  }, [active]);
+  }, [active]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const { ref: scrollRef, pullDist, refreshing } = usePullToRefresh(refetch);
 

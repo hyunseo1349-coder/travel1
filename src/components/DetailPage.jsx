@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { getActivityIcon } from './ActivityIcon.jsx';
 import PhotoCropper from './PhotoCropper.jsx';
 
@@ -184,6 +184,8 @@ export default function DetailPage({ item, onBack }) {
   // 필드 편집: 날짜+일정명을 안정적인 키로 사용
   const editKey = `${item.date || ''}:${item.schedule || ''}`;
   const [fieldEdits, setFieldEdits] = useState(() => loadEdits(editKey));
+  // item이 바뀌면 저장된 편집값 재로드
+  useEffect(() => { setFieldEdits(loadEdits(editKey)); }, [editKey]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSaveField = async (fieldKey, value) => {
     const newEdits = { ...fieldEdits, [fieldKey]: value };

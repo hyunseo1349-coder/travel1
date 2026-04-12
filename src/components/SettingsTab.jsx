@@ -11,7 +11,7 @@ function ShareButton({ activeTrip, activeThemeId }) {
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2500);
-    });
+    }).catch(() => {});
   };
   return (
     <button
@@ -63,7 +63,7 @@ function SheetRow({ label, value, sheetId, gid }) {
     navigator.clipboard.writeText(url).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
-    });
+    }).catch(() => {});
   };
 
   return (

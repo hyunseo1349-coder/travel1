@@ -92,6 +92,7 @@ export default function App() {
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleThemeChange = (id) => {
+    if (!activeTrip.id) return;
     const updated = trips.map(t => t.id === activeTrip.id ? { ...t, themeId: id } : t);
     setTrips(updated);
     saveTrips(updated);
