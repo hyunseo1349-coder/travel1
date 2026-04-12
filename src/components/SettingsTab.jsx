@@ -1,5 +1,45 @@
 import { useState } from 'react';
 import { THEMES, THEME_ORDER } from '../theme.js';
+import { tripToShareUrl } from '../tripShare.js';
+
+function ShareButton({ activeTrip, activeThemeId }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = () => {
+    if (!activeTrip?.scheduleSheetId) return;
+    const trip = { ...activeTrip, themeId: activeThemeId };
+    const url = tripToShareUrl(trip);
+    navigator.clipboard.writeText(url).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+    });
+  };
+  return (
+    <button
+      onClick={handleCopy}
+      style={{
+        width: '100%', padding: '12px 16px',
+        borderRadius: 12, border: 'none', cursor: 'pointer',
+        backgroundColor: copied ? 'var(--cl, #dff0db)' : 'var(--cp, #436440)',
+        color: copied ? 'var(--cp, #436440)' : '#fff',
+        fontSize: 13, fontWeight: 700,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+        transition: 'all 0.2s',
+      }}
+    >
+      {copied ? (
+        <>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+          링크 복사됨!
+        </>
+      ) : (
+        <>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          이 여행 링크 복사
+        </>
+      )}
+    </button>
+  );
+}
 
 function Divider() {
   return <div style={{ height: 1, backgroundColor: '#f0f0ee', margin: '0 0 0' }} />;
@@ -86,6 +126,14 @@ export default function SettingsTab({ activeThemeId, onThemeChange, activeTrip }
               );
             })}
           </div>
+        </div>
+      </div>
+
+      {/* ── 여행 공유 ── */}
+      <div style={{ backgroundColor: '#fff', marginBottom: 8 }}>
+        <SectionTitle sub="링크를 공유하면 상대방 앱에 이 여행이 자동으로 추가돼요">여행 공유</SectionTitle>
+        <div style={{ padding: '0 20px 20px' }}>
+          <ShareButton activeTrip={activeTrip} activeThemeId={activeThemeId} />
         </div>
       </div>
 

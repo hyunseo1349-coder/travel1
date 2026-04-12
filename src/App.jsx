@@ -7,6 +7,7 @@ import BudgetTab from './components/BudgetTab.jsx';
 import SettingsTab from './components/SettingsTab.jsx';
 import Drawer, { loadTrips, loadActiveId, saveActiveId, saveTrips } from './components/Drawer.jsx';
 import { applyTheme } from './theme.js';
+import { parseShareUrl } from './tripShare.js';
 
 // ─── 탭별 헤더 타이틀 ────────────────────────────────────────────────────────
 const TAB_TITLES = {
@@ -61,6 +62,34 @@ export default function App() {
 
   // 여행 전환 또는 테마 변경 시 CSS 변수 적용
   useEffect(() => { applyTheme(themeId); }, [themeId]);
+
+  // URL 공유 링크로 열렸을 때 여행 자동 추가
+  useEffect(() => {
+    const imported = parseShareUrl();
+    if (!imported) return;
+    // URL 파라미터 제거 (뒤로가기 등에서 재실행 방지)
+    window.history.replaceState({}, '', window.location.pathname);
+    setTrips(prev => {
+      // 동일 시트 조합이면 중복 추가 안 함
+      const exists = prev.find(t =>
+        t.scheduleSheetId === imported.scheduleSheetId &&
+        t.scheduleGid     === imported.scheduleGid
+      );
+      if (exists) {
+        // 이미 있으면 그 여행으로 전환만
+        setActiveId(exists.id);
+        saveActiveId(exists.id);
+        applyTheme(exists.themeId || 'emerald');
+        return prev;
+      }
+      const updated = [...prev, imported];
+      saveTrips(updated);
+      setActiveId(imported.id);
+      saveActiveId(imported.id);
+      applyTheme(imported.themeId);
+      return updated;
+    });
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleThemeChange = (id) => {
     const updated = trips.map(t => t.id === activeTrip.id ? { ...t, themeId: id } : t);
