@@ -290,14 +290,44 @@ function TripAtAGlance({ days, expenses }) {
 }
 
 // ─── 경비 시트 도시 열 기반 도시 추출 ────────────────────────────────────────
+// pd → 여러 날짜 표현으로 변환해 폭넓게 매칭
+function pdToDateVariants(pd) {
+  const y  = pd.year;
+  const m  = pd.month;
+  const d  = pd.day;
+  const mm = String(m).padStart(2,'0');
+  const dd = String(d).padStart(2,'0');
+  return new Set([
+    `${y}-${mm}-${dd}`,        // 2026-04-12
+    `${m}/${d}/${y}`,          // 4/12/2026
+    `${mm}/${dd}/${y}`,        // 04/12/2026
+    `${y}/${mm}/${dd}`,        // 2026/04/12
+    `${m}월${d}일`,            // 4월12일
+    `${m}월 ${d}일`,           // 4월 12일
+  ]);
+}
+
 function getCityFromExpenses(expenses, pd) {
   if (!pd) return '';
-  const dateStr = `${pd.year}-${String(pd.month).padStart(2,'0')}-${String(pd.day).padStart(2,'0')}`;
-  const cities = [...new Set(
-    expenses.filter(e => e.date === dateStr && e.city?.trim()).map(e => e.city.trim())
-  )];
+  const variants = pdToDateVariants(pd);
+
+  // e.date(정규화값) 또는 e.dateRaw(원본) 중 하나라도 매칭되면 포함
+  const matched = expenses.filter(e => {
+    if (!e.city?.trim()) return false;
+    if (variants.has(e.date)) return true;
+    if (e.dateRaw && variants.has(e.dateRaw.trim())) return true;
+    // 월/일만으로도 폴백 비교 (연도 불일치 대비)
+    const mm = String(pd.month).padStart(2,'0');
+    const dd = String(pd.day).padStart(2,'0');
+    const mdOnly = `${mm}-${dd}`;
+    if (e.date && e.date.endsWith(mdOnly)) return true;
+    return false;
+  });
+
+  const cities = [...new Set(matched.map(e => e.city.trim()))];
   if (cities.length === 0) return '';
   if (cities.length === 1) return cities[0];
+  // 처음 등장 도시 → 마지막 등장 도시 (이동 표기)
   return `${cities[0]} → ${cities[cities.length - 1]}`;
 }
 
@@ -317,7 +347,8 @@ function ItinerarySummary({ days, expenses }) {
           {days.map((day, idx) => {
             const pd    = day.parsedDate;
             const spots = day.items.filter(i => isTouristSpot(i.schedule));
-            const city  = getCityFromExpenses(expenses, pd);
+            // 경비 시트 도시 우선, 없으면 일정 텍스트에서 추출
+            const city  = getCityFromExpenses(expenses, pd) || getDayCity(day.items);
             const today = isActualToday(pd);
             const isPast= pd && (() => { const d=new Date(pd.year,pd.month-1,pd.day); const n=new Date(); n.setHours(0,0,0,0); return d<n; })();
 
