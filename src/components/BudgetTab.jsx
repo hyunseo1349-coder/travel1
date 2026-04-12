@@ -103,13 +103,13 @@ function CategoryChart({ expenses }) {
   if (!total) return null;
 
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '20px', margin: '0 16px', boxShadow: '0 2px 12px rgba(67,100,64,0.07)' }}>
-      <p style={{ fontSize: '13px', fontWeight: 700, color: '#111827', margin: '0 0 16px' }}>카테고리별 지출</p>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-        <div style={{ flex: '0 0 130px', height: 130 }}>
+    <div style={{ backgroundColor: '#fff', borderRadius: '20px', padding: '14px 16px', margin: '0 16px', boxShadow: '0 2px 12px rgba(67,100,64,0.07)' }}>
+      <p style={{ fontSize: '12px', fontWeight: 700, color: '#111827', margin: '0 0 10px' }}>카테고리별 지출</p>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+        <div style={{ flex: '0 0 100px', height: 100 }}>
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
-              <Pie data={data} cx="50%" cy="50%" innerRadius={38} outerRadius={58}
+              <Pie data={data} cx="50%" cy="50%" innerRadius={28} outerRadius={46}
                 dataKey="value" startAngle={90} endAngle={-270} strokeWidth={0}>
                 {data.map((d, i) => <Cell key={i} fill={d.color} />)}
               </Pie>
@@ -117,14 +117,14 @@ function CategoryChart({ expenses }) {
             </PieChart>
           </ResponsiveContainer>
         </div>
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '6px' }}>
           {data.map(d => (
             <div key={d.name} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-                <span style={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
-                <span style={{ fontSize: '12px', color: '#374151' }}>{d.name}</span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <span style={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: d.color, flexShrink: 0 }} />
+                <span style={{ fontSize: '11px', color: '#374151' }}>{d.name}</span>
               </div>
-              <span style={{ fontSize: '12px', fontWeight: 600, color: '#111827' }}>
+              <span style={{ fontSize: '11px', fontWeight: 600, color: '#111827' }}>
                 {Math.round(d.value / total * 100)}%
               </span>
             </div>
@@ -260,17 +260,23 @@ function FilterChips({ selected, onChange, expenses }) {
 
 // ─── 메인 컴포넌트 ────────────────────────────────────────────────────────────
 export default function BudgetTab() {
-  const { expenses, rates, loading, error } = useExpenseSheet();
+  const { expenses, loading, error } = useExpenseSheet();
   const [catFilter, setCatFilter] = useState('ALL');
 
-  const filtered = useMemo(() =>
-    catFilter === 'ALL' ? expenses : expenses.filter(e => e.category === catFilter),
-    [expenses, catFilter]
+  // 금액 있는 항목만
+  const validExpenses = useMemo(() =>
+    expenses.filter(e => e.amountKRW > 0 || e.amount > 0),
+    [expenses]
   );
 
-  const totalKRW  = useMemo(() => filtered.reduce((s, e) => s + e.amountKRW, 0), [filtered]);
-  const todayKRW  = useMemo(() => todaySpend(expenses), [expenses]);
-  const groups    = useMemo(() => groupByDate(filtered), [filtered]);
+  const filtered = useMemo(() =>
+    catFilter === 'ALL' ? validExpenses : validExpenses.filter(e => e.category === catFilter),
+    [validExpenses, catFilter]
+  );
+
+  const totalKRW = useMemo(() => validExpenses.reduce((s, e) => s + e.amountKRW, 0), [validExpenses]);
+  const todayKRW = useMemo(() => todaySpend(validExpenses), [validExpenses]);
+  const groups   = useMemo(() => groupByDate(filtered), [filtered]);
 
   if (loading) return <Skeleton />;
   if (error)   return <ErrorState message={error} />;
@@ -278,35 +284,34 @@ export default function BudgetTab() {
   return (
     <div style={{ flex: 1, overflowY: 'auto', backgroundColor: '#fafaf8' }} className="scrollbar-hide">
 
-      {/* ── 총 지출 카드 ── */}
-      <div style={{ margin: '16px 16px 12px', borderRadius: '24px', background: 'linear-gradient(135deg,#436440 0%,#2d4a2a 100%)', padding: '24px', color: '#fff' }}>
-        <p style={{ fontSize: '11px', fontWeight: 600, letterSpacing: '0.12em', opacity: 0.75, margin: '0 0 6px', textTransform: 'uppercase' }}>총 지출</p>
-        <p style={{ fontSize: '32px', fontWeight: 800, margin: '0 0 20px', letterSpacing: '-0.02em', fontFamily: "'Inter',sans-serif" }}>
-          {fmtKRW(totalKRW)}
-        </p>
-
-        <div style={{ display: 'flex', gap: '12px' }}>
-          <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: '14px', padding: '12px' }}>
-            <p style={{ fontSize: '10px', opacity: 0.7, margin: '0 0 4px', letterSpacing: '0.08em' }}>오늘 지출</p>
-            <p style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>{fmtKRW(todayKRW)}</p>
-          </div>
-          <div style={{ flex: 1, backgroundColor: 'rgba(255,255,255,0.12)', borderRadius: '14px', padding: '12px' }}>
-            <p style={{ fontSize: '10px', opacity: 0.7, margin: '0 0 4px', letterSpacing: '0.08em' }}>총 항목</p>
-            <p style={{ fontSize: '16px', fontWeight: 700, margin: 0 }}>{expenses.length}건</p>
-          </div>
+      {/* ── 총 지출 + 오늘 지출 (나란히) ── */}
+      <div style={{ margin: '14px 16px 10px', display: 'flex', gap: '10px' }}>
+        <div style={{ flex: 1, borderRadius: '18px', background: 'linear-gradient(135deg,#436440 0%,#2d4a2a 100%)', padding: '14px 16px', color: '#fff' }}>
+          <p style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', opacity: 0.75, margin: '0 0 4px', textTransform: 'uppercase' }}>총 지출</p>
+          <p style={{ fontSize: '20px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', fontFamily: "'Inter',sans-serif", lineHeight: 1.2 }}>
+            {fmtKRW(totalKRW)}
+          </p>
+          <p style={{ fontSize: '10px', opacity: 0.6, margin: '4px 0 0' }}>{validExpenses.length}건</p>
+        </div>
+        <div style={{ flex: 1, borderRadius: '18px', backgroundColor: '#fff', padding: '14px 16px', boxShadow: '0 2px 10px rgba(67,100,64,0.07)' }}>
+          <p style={{ fontSize: '10px', fontWeight: 600, letterSpacing: '0.1em', color: '#8faa8d', margin: '0 0 4px', textTransform: 'uppercase' }}>오늘 지출</p>
+          <p style={{ fontSize: '20px', fontWeight: 800, margin: 0, letterSpacing: '-0.02em', fontFamily: "'Inter',sans-serif", color: '#111827', lineHeight: 1.2 }}>
+            {fmtKRW(todayKRW)}
+          </p>
+          <p style={{ fontSize: '10px', color: '#9ca3af', margin: '4px 0 0' }}>현지 시간 기준</p>
         </div>
       </div>
 
-      {/* ── 카테고리 필터 ── */}
-      <FilterChips selected={catFilter} onChange={setCatFilter} expenses={expenses} />
-
       {/* ── 도넛 차트 ── */}
-      <div style={{ margin: '12px 0' }}>
-        <CategoryChart expenses={filtered} />
+      <div style={{ margin: '0 0 10px' }}>
+        <CategoryChart expenses={validExpenses} />
       </div>
 
+      {/* ── 카테고리 필터 ── */}
+      <FilterChips selected={catFilter} onChange={setCatFilter} expenses={validExpenses} />
+
       {/* ── 지출 목록 ── */}
-      <div style={{ padding: '4px 16px 100px' }}>
+      <div style={{ padding: '10px 16px 100px' }}>
         {groups.length === 0 ? (
           <div style={{ textAlign: 'center', padding: '48px 0', color: '#9ca3af', fontSize: '14px' }}>
             내역이 없어요
