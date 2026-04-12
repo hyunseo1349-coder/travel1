@@ -188,7 +188,13 @@ export default function App() {
             transition: 'transform 0.28s cubic-bezier(0.4,0,0.2,1)',
             zIndex: 100,
           }}>
-            <DetailPage item={detailItem} onBack={closeDetail} />
+            <DetailPage
+              item={detailItem}
+              onBack={closeDetail}
+              scriptUrl={activeTrip.scriptUrl || ''}
+              sheetId={activeTrip.scheduleSheetId || ''}
+              gid={activeTrip.scheduleGid || ''}
+            />
           </div>
         )}
       </div>

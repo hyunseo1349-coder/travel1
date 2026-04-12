@@ -64,8 +64,7 @@ const EDITS_KEY = 'journey-field-edits';
 function loadEdits(key)        { try { return JSON.parse(localStorage.getItem(EDITS_KEY) || '{}')[key] || {}; } catch { return {}; } }
 function saveEdits(key, edits) { try { const all = JSON.parse(localStorage.getItem(EDITS_KEY) || '{}'); all[key] = edits; localStorage.setItem(EDITS_KEY, JSON.stringify(all)); } catch {} }
 
-// ─── Apps Script URL ─────────────────────────────────────────────────────────
-const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJnBj1Yj1hD-fMGmjQF-RpBLygL9RczdMMS4olLP97yYyQrfY6PObiwtgr-8bTyv25pQ/exec';
+// (Apps Script URL은 여행별 설정에서 주입 - 하드코딩 제거)
 
 // ─── 상세 필드 아이콘 ─────────────────────────────────────────────────────────
 const IcoDoc    = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
@@ -185,7 +184,7 @@ function FieldRow({ field, editValue, onSave }) {
 }
 
 // ─── 메인 컴포넌트 ───────────────────────────────────────────────────────────
-export default function DetailPage({ item, onBack }) {
+export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
   const category     = getCategory(item.schedule, item.content);
   const fallbackGrad = FALLBACK_GRADIENTS[category] || FALLBACK_GRADIENTS.pin;
 
@@ -204,14 +203,17 @@ export default function DetailPage({ item, onBack }) {
     const newEdits = { ...fieldEdits, [fieldKey]: value };
     setFieldEdits(newEdits);
     saveEdits(editKey, newEdits);
-    // 구글 시트 동기화
+    // 구글 시트 동기화 (scriptUrl이 설정된 경우에만)
+    if (!scriptUrl) return;
     try {
-      await fetch(SCRIPT_URL, {
+      // no-cors 모드: Content-Type 헤더 없이 보내야 preflight 없이 전송됨
+      await fetch(scriptUrl, {
         method: 'POST',
         mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'updateSchedule',
+          sheetId,
+          gid,
           date: item.date,
           schedule: item.schedule,
           fieldKey,

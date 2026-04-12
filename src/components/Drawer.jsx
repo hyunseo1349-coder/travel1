@@ -44,10 +44,11 @@ function parseSheetUrl(url = '') {
 
 // ─── 여행 추가/수정 폼 ────────────────────────────────────────────────────────
 function TripForm({ initial, onSave, onCancel, onDelete }) {
-  const [level1,    setLevel1]    = useState(initial?.level1 || '');
-  const [level2,    setLevel2]    = useState(initial?.level2 || '');
-  const [schedUrl,  setSchedUrl]  = useState('');
-  const [expUrl,    setExpUrl]    = useState('');
+  const [level1,     setLevel1]     = useState(initial?.level1 || '');
+  const [level2,     setLevel2]     = useState(initial?.level2 || '');
+  const [schedUrl,   setSchedUrl]   = useState('');
+  const [expUrl,     setExpUrl]     = useState('');
+  const [scriptUrl,  setScriptUrl]  = useState(initial?.scriptUrl || '');
 
   const schedHint = initial?.scheduleSheetId
     ? `현재 GID: ${initial.scheduleGid || '(기본값)'}`
@@ -67,6 +68,7 @@ function TripForm({ initial, onSave, onCancel, onDelete }) {
       scheduleGid:     s.gid,
       expenseSheetId:  x.sheetId,
       expenseGid:      x.gid,
+      scriptUrl:       scriptUrl.trim(),
     });
   };
 
@@ -109,6 +111,13 @@ function TripForm({ initial, onSave, onCancel, onDelete }) {
         <p style={{ fontSize: '11px', color: '#9ca3af', margin: '-6px 0 0', lineHeight: 1.5 }}>
           구글 시트에서 해당 탭 선택 후 주소창 URL 전체를 붙여넣으면 자동으로 연결돼요.
         </p>
+        <div>
+          <label style={lbl}>동기화 URL (Apps Script)</label>
+          <input style={inp} value={scriptUrl} onChange={e => setScriptUrl(e.target.value)} placeholder="https://script.google.com/macros/s/..." />
+          <p style={{ fontSize: '11px', color: '#9ca3af', margin: '5px 0 0', lineHeight: 1.5 }}>
+            입력하면 앱에서 수정한 메모·링크가 구글 시트에 자동 반영돼요.
+          </p>
+        </div>
         <div style={{ display: 'flex', gap: '8px', marginTop: '4px' }}>
           {onDelete && (
             <button onClick={onDelete} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1.5px solid #fee2e2', backgroundColor: '#fff', color: '#ef4444', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
