@@ -5,8 +5,8 @@ import DetailPage from './components/DetailPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BudgetTab from './components/BudgetTab.jsx';
 import SettingsTab from './components/SettingsTab.jsx';
-import Drawer, { loadTrips, loadActiveId, saveActiveId } from './components/Drawer.jsx';
-import { applyTheme, loadThemeId } from './theme.js';
+import Drawer, { loadTrips, loadActiveId, saveActiveId, saveTrips } from './components/Drawer.jsx';
+import { applyTheme } from './theme.js';
 
 // ─── 탭별 헤더 타이틀 ────────────────────────────────────────────────────────
 const TAB_TITLES = {
@@ -55,17 +55,26 @@ export default function App() {
   const [activeTab,    setActiveTab]    = useState('home');
   const [detailItem,   setDetailItem]   = useState(null);
   const [detailVisible,setDetailVisible]= useState(false);
-  const [themeId,      setThemeId]      = useState(loadThemeId);
-
-  useEffect(() => { applyTheme(themeId); }, [themeId]);
-
-  const handleThemeChange = (id) => { applyTheme(id); setThemeId(id); };
 
   const activeTrip = trips.find(t => t.id === activeId) || trips[0] || {};
+  const themeId = activeTrip.themeId || 'emerald';
+
+  // 여행 전환 또는 테마 변경 시 CSS 변수 적용
+  useEffect(() => { applyTheme(themeId); }, [themeId]);
+
+  const handleThemeChange = (id) => {
+    const updated = trips.map(t => t.id === activeTrip.id ? { ...t, themeId: id } : t);
+    setTrips(updated);
+    saveTrips(updated);
+    applyTheme(id);
+  };
 
   const handleSelectTrip = (id) => {
     setActiveId(id);
     saveActiveId(id);
+    // 선택한 여행의 테마 적용
+    const trip = trips.find(t => t.id === id);
+    applyTheme(trip?.themeId || 'emerald');
   };
 
   const openDetail = (item) => {
