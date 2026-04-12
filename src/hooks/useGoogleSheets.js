@@ -115,9 +115,10 @@ const DETAIL_FIELD_DEFS = [
 
 // ─── 메인 훅 ────────────────────────────────────────────────────────────────
 export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
-  const [days, setDays]       = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError]     = useState(null);
+  const [days,       setDays]       = useState([]);
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,7 +199,7 @@ export function useGoogleSheets(sheetId = DEFAULT_SHEET_ID, gid = DEFAULT_GID) {
     }
     fetchSheet();
     return () => { cancelled = true; };
-  }, [sheetId, gid]);
+  }, [sheetId, gid, refreshKey]);
 
-  return { days, loading, error };
+  return { days, loading, error, refetch: () => setRefreshKey(k => k+1) };
 }

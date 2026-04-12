@@ -107,10 +107,11 @@ function extractRates(rows) {
 
 // ─── 메인 훅 ─────────────────────────────────────────────────────────────────
 export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
-  const [expenses, setExpenses] = useState([]);
-  const [rates,    setRates]    = useState({ KRW:1, USD:1380, EUR:1500, CHF:1550, JPY:9.5 });
-  const [loading,  setLoading]  = useState(true);
-  const [error,    setError]    = useState(null);
+  const [expenses,   setExpenses]   = useState([]);
+  const [rates,      setRates]      = useState({ KRW:1, USD:1380, EUR:1500, CHF:1550, JPY:9.5 });
+  const [loading,    setLoading]    = useState(true);
+  const [error,      setError]      = useState(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -134,6 +135,7 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
 
         const iDate   = findCol(headers, ['날짜','date']);
         const iCountry= findCol(headers, ['국가','country','나라']);
+        const iCity   = findCol(headers, ['도시','city','cities','지역']);
         const iItem   = findCol(headers, ['항목','내용','item','description']);
         const iCat    = findCol(headers, ['카테고리','category','분류']);
         const iCur    = findCol(headers, ['통화','currency','화폐']);
@@ -172,6 +174,7 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
               date:      normalizeDate(rawDate),
               dateRaw:   rawDate,
               country:   get(row, iCountry),
+              city:      get(row, iCity),
               item,
               category:    normalizeCategory(resolvedCat),
               categoryRaw: rawCat,
@@ -193,7 +196,7 @@ export function useExpenseSheet(sheetId = SHEET_ID, gid = EXPENSE_GID) {
       }
     })();
     return () => { cancelled = true; };
-  }, [sheetId, gid]);
+  }, [sheetId, gid, refreshKey]);
 
-  return { expenses, rates, loading, error };
+  return { expenses, rates, loading, error, refetch: () => setRefreshKey(k => k+1) };
 }

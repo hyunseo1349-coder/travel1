@@ -214,19 +214,34 @@ const IcoGlobe   = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="n
 const IcoWallet  = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/><path d="M12 14h.01" strokeWidth="3"/></svg>;
 const IcoReceipt = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1-2-1z"/><line x1="8" y1="7" x2="16" y2="7"/><line x1="8" y1="11" x2="16" y2="11"/><line x1="8" y1="15" x2="11" y2="15"/></svg>;
 
+// 한국 관련 국가/도시 제외 키워드
+const KR_EXCLUDE = ['한국','korea','kr','대한민국','south korea','인천','서울','부산','대구','광주','대전','울산','수원','제주'];
+function isKorea(str = '') {
+  const s = str.trim().toLowerCase();
+  return KR_EXCLUDE.some(k => s === k || s.includes(k));
+}
+
 function TripAtAGlance({ days, expenses }) {
   const totalSpent = expenses.reduce((s,e) => s+(e.amountKRW||0), 0);
   const todayStr   = new Date().toLocaleDateString('en-CA');
   const todaySpent = expenses.filter(e => e.date===todayStr).reduce((s,e) => s+(e.amountKRW||0), 0);
-  const countries  = [...new Set(expenses.map(e => e.country).filter(Boolean))];
+
+  // 한국 제외 국가·도시 카운트
+  const foreignExp  = expenses.filter(e => !isKorea(e.country));
+  const countries   = [...new Set(foreignExp.map(e => e.country).filter(Boolean))];
+  const cities      = [...new Set(foreignExp.map(e => e.city).filter(Boolean))];
 
   const fmtM = n => n>=10000000 ? `₩${(n/10000000).toFixed(1)}천만` : n>=1000000 ? `₩${(n/1000000).toFixed(1)}M` : n>=10000 ? `₩${(n/10000).toFixed(0)}만` : `₩${n.toLocaleString()}`;
 
+  // 국가 + 도시 합산 표시 문자열
+  const countryLine = countries.length > 0 ? `${countries.length}개국` : '—';
+  const cityLine    = cities.length > 0    ? `${cities.length}개 도시` : null;
+
   const cells = [
-    { Icon: IcoCal,     label: 'DURATION',   value: `${days.length}일` },
-    { Icon: IcoGlobe,   label: 'COUNTRIES',  value: countries.length > 0 ? `${countries.length}개국` : `—` },
-    { Icon: IcoWallet,  label: '총 지출',    value: totalSpent > 0 ? fmtM(totalSpent) : '—' },
-    { Icon: IcoReceipt, label: '오늘 지출',  value: todaySpent > 0 ? fmtM(todaySpent) : '—' },
+    { Icon: IcoCal,     label: 'DURATION',  value: `${days.length}일` },
+    { Icon: IcoGlobe,   label: 'COUNTRIES', value: countryLine, sub: cityLine },
+    { Icon: IcoWallet,  label: '총 지출',   value: totalSpent > 0 ? fmtM(totalSpent) : '—' },
+    { Icon: IcoReceipt, label: '오늘 지출', value: todaySpent > 0 ? fmtM(todaySpent) : '—' },
   ];
 
   return (
@@ -236,13 +251,14 @@ function TripAtAGlance({ days, expenses }) {
         <span style={{ fontSize:'10px', fontWeight:700, color:'#436440', letterSpacing:'0.08em' }}>SUMMARY</span>
       </div>
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:'10px' }}>
-        {cells.map(({ Icon, label, value }) => (
-          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'16px', padding:'16px 14px' }}>
-            <div style={{ width:36, height:36, borderRadius:'10px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'10px' }}>
+        {cells.map(({ Icon, label, value, sub }) => (
+          <div key={label} style={{ backgroundColor:'#f8faf8', borderRadius:'16px', padding:'14px 14px' }}>
+            <div style={{ width:32, height:32, borderRadius:'9px', backgroundColor:'#edf4ec', color:'#436440', display:'flex', alignItems:'center', justifyContent:'center', marginBottom:'9px' }}>
               <Icon />
             </div>
-            <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 4px' }}>{label}</p>
-            <p style={{ fontSize:'20px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.2 }}>{value}</p>
+            <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:'0 0 3px' }}>{label}</p>
+            <p style={{ fontSize:'19px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.02em', lineHeight:1.15 }}>{value}</p>
+            {sub && <p style={{ fontSize:'11px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
       </div>
