@@ -260,7 +260,7 @@ function TripAtAGlance({ days, expenses }) {
   const countries   = [...new Set(foreignExp.map(e => e.country).filter(Boolean))];
   const cities      = [...new Set(foreignExp.map(e => e.city).filter(Boolean))];
 
-  const fmtM = n => `${n.toLocaleString()}원`;
+  const fmtM = n => `${Math.round(n).toLocaleString()}원`;
 
   // 국가 + 도시 합산 표시 문자열
   const countryLine = countries.length > 0 ? `${countries.length}개국` : '—';
@@ -287,7 +287,7 @@ function TripAtAGlance({ days, expenses }) {
               </div>
               <p style={{ fontSize:'9px', fontWeight:700, color:'#9ca3af', letterSpacing:'0.1em', textTransform:'uppercase', margin:0, lineHeight:1 }}>{label}</p>
             </div>
-            <p style={{ fontFamily:"-apple-system,BlinkMacSystemFont,'Inter','Segoe UI',sans-serif", fontSize:'22px', fontWeight:800, color:'#1f2937', margin:0, letterSpacing:'-0.03em', lineHeight:1.1, wordBreak:'break-all' }}>{value}</p>
+            <p style={{ fontFamily:"'Noto Serif KR','Noto Serif',Georgia,serif", fontSize:'17px', fontWeight:700, color:'#1f2937', margin:0, letterSpacing:'-0.01em', lineHeight:1.2, wordBreak:'break-all' }}>{value}</p>
             {sub && <p style={{ fontSize:'10px', fontWeight:600, color:'#6b9466', margin:'2px 0 0' }}>{sub}</p>}
           </div>
         ))}
@@ -486,22 +486,22 @@ function WeatherCard({ days, todayIdx, tripId }) {
 
   return (
     <div style={{ padding:'0 0 4px' }}>
-      <div style={{ backgroundColor:'#436440', borderRadius:'20px', padding:'20px', margin:'0' }}>
+      <div style={{ backgroundColor:'#fff', borderRadius:'20px', padding:'18px 20px', margin:'0', border:'1px solid #e8f0e7' }}>
         {/* 헤더 */}
         <div style={{ display:'flex', alignItems:'center', justifyContent:'space-between', marginBottom:'14px' }}>
-          <p style={{ color:'rgba(255,255,255,0.75)', fontSize:'12px', fontWeight:600, margin:0, letterSpacing:'0.05em' }}>Destination Weather</p>
+          <p style={{ color:'#9ca3af', fontSize:'11px', fontWeight:700, margin:0, letterSpacing:'0.08em', textTransform:'uppercase' }}>Destination Weather</p>
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
             {/* 위치 재감지 버튼 */}
             <button
               onClick={handleRedetect}
-              style={{ display:'flex', alignItems:'center', color:'rgba(255,255,255,0.5)', border:'none', background:'none', cursor:'pointer', padding:'2px' }}
+              style={{ display:'flex', alignItems:'center', color:'#9ca3af', border:'none', background:'none', cursor:'pointer', padding:'2px' }}
               title="위치 재감지"
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/><path d="M12 2a10 10 0 0 1 0 20A10 10 0 0 1 12 2z" strokeDasharray="3 3"/></svg>
             </button>
             <button
               onClick={() => { setDraft(city); setEditing(true); }}
-              style={{ display:'flex', alignItems:'center', gap:'4px', color:'rgba(255,255,255,0.6)', fontSize:'11px', border:'none', background:'none', cursor:'pointer', padding:'2px 0' }}
+              style={{ display:'flex', alignItems:'center', gap:'4px', color:'#6b9466', fontSize:'11px', border:'none', background:'none', cursor:'pointer', padding:'2px 0' }}
             >
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
               {city || (detecting ? '감지 중...' : '도시 설정')}
@@ -517,48 +517,48 @@ function WeatherCard({ days, todayIdx, tripId }) {
               onKeyDown={e => e.key==='Enter' && handleSave()}
               autoFocus
               placeholder="도시명 입력 (예: Rome, Zermatt)"
-              style={{ flex:1, padding:'9px 12px', borderRadius:'10px', border:'1.5px solid rgba(255,255,255,0.3)', backgroundColor:'rgba(255,255,255,0.15)', color:'#fff', fontSize:'13px', outline:'none', fontFamily:'inherit' }}
+              style={{ flex:1, padding:'9px 12px', borderRadius:'10px', border:'1.5px solid #d1e8cf', backgroundColor:'#f8faf8', color:'#1f2937', fontSize:'13px', outline:'none', fontFamily:'inherit' }}
             />
-            <button onClick={handleSave} style={{ padding:'9px 14px', borderRadius:'10px', border:'none', backgroundColor:'rgba(255,255,255,0.25)', color:'#fff', fontSize:'12px', fontWeight:600, cursor:'pointer' }}>
+            <button onClick={handleSave} style={{ padding:'9px 14px', borderRadius:'10px', border:'none', backgroundColor:'#436440', color:'#fff', fontSize:'12px', fontWeight:600, cursor:'pointer' }}>
               확인
             </button>
           </div>
         ) : detecting ? (
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', borderTopColor:'#fff' }} />
-            <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'13px', margin:0 }}>현재 위치 감지 중...</p>
+            <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid #e0ecdf', borderTopColor:'#436440' }} />
+            <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>현재 위치 감지 중...</p>
           </div>
         ) : !city ? (
-          <p style={{ color:'rgba(255,255,255,0.5)', fontSize:'13px', margin:0 }}>위치를 감지하거나 도시를 직접 설정해주세요</p>
+          <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>위치를 감지하거나 도시를 직접 설정해주세요</p>
         ) : loading ? (
           <div style={{ display:'flex', alignItems:'center', gap:'8px' }}>
-            <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid rgba(255,255,255,0.2)', borderTopColor:'#fff' }} />
-            <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'13px', margin:0 }}>날씨 불러오는 중...</p>
+            <div className="animate-spin" style={{ width:18, height:18, borderRadius:'50%', border:'2px solid #e0ecdf', borderTopColor:'#436440' }} />
+            <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>날씨 불러오는 중...</p>
           </div>
         ) : data ? (
           <>
             <div style={{ display:'flex', alignItems:'flex-start', justifyContent:'space-between', marginBottom:'4px' }}>
               <div>
-                <p style={{ color:'#fff', fontSize:'48px', fontWeight:700, margin:'0 0 2px', letterSpacing:'-0.03em', lineHeight:1 }}>{data.temp}°C</p>
-                <p style={{ color:'rgba(255,255,255,0.7)', fontSize:'13px', margin:0 }}>{wmoDesc(data.code)} · {data.cityName}</p>
+                <p style={{ color:'#1f2937', fontSize:'46px', fontWeight:700, margin:'0 0 2px', letterSpacing:'-0.03em', lineHeight:1 }}>{data.temp}°C</p>
+                <p style={{ color:'#6b7280', fontSize:'13px', margin:0 }}>{wmoDesc(data.code)} · {data.cityName}</p>
               </div>
-              <span style={{ fontSize:'44px', lineHeight:1, marginTop:'2px' }}>{wmoIcon(data.code)}</span>
+              <span style={{ fontSize:'42px', lineHeight:1, marginTop:'2px' }}>{wmoIcon(data.code)}</span>
             </div>
 
-            <div style={{ height:1, backgroundColor:'rgba(255,255,255,0.18)', margin:'14px 0' }} />
+            <div style={{ borderTop:'1.5px dashed #dff0db', margin:'14px 0' }} />
 
             <div style={{ display:'flex', justifyContent:'space-between' }}>
               {data.daily.map(f => (
                 <div key={f.day} style={{ textAlign:'center' }}>
-                  <p style={{ color:'rgba(255,255,255,0.6)', fontSize:'11px', margin:'0 0 4px' }}>{f.day}</p>
+                  <p style={{ color:'#9ca3af', fontSize:'11px', margin:'0 0 4px' }}>{f.day}</p>
                   <p style={{ fontSize:'13px', margin:0 }}>{wmoIcon(f.code)}</p>
-                  <p style={{ color:'#fff', fontSize:'13px', fontWeight:600, margin:'3px 0 0' }}>{f.temp}°</p>
+                  <p style={{ color:'#374151', fontSize:'13px', fontWeight:600, margin:'3px 0 0' }}>{f.temp}°</p>
                 </div>
               ))}
             </div>
           </>
         ) : (
-          <p style={{ color:'rgba(255,255,255,0.5)', fontSize:'13px', margin:0 }}>날씨 정보를 불러올 수 없어요</p>
+          <p style={{ color:'#9ca3af', fontSize:'13px', margin:0 }}>날씨 정보를 불러올 수 없어요</p>
         )}
       </div>
     </div>
