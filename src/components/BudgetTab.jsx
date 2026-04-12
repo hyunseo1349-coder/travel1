@@ -452,8 +452,8 @@ function ErrorState({ message }) {
 }
 
 // ─── 메인 ────────────────────────────────────────────────────────────────────
-export default function BudgetTab() {
-  const { expenses, rates, loading, error } = useExpenseSheet();
+export default function BudgetTab({ sheetId, expenseGid }) {
+  const { expenses, rates, loading, error } = useExpenseSheet(sheetId, expenseGid);
   const [manualList,   setManualList]   = useState(loadManual);
   const [catOverrides, setCatOverrides] = useState(loadCatOverrides);
   const [catFilter,    setCatFilter]    = useState('ALL');

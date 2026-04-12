@@ -4,36 +4,53 @@ import DailyScheduleTab from './components/DailyScheduleTab.jsx';
 import DetailPage from './components/DetailPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
 import BudgetTab from './components/BudgetTab.jsx';
+import Drawer, { loadTrips, loadActiveId, saveActiveId } from './components/Drawer.jsx';
 
 // ─── 앱 상단 바 ──────────────────────────────────────────────────────────────
-function AppBar() {
+function AppBar({ onMenuClick }) {
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '48px 20px 12px', backgroundColor: '#fff' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-        <span style={{ width: 28, height: 28, backgroundColor: '#436440', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none">
-            <path d="M12 2C8 2 5 6 5 10c0 5.25 7 12 7 12s7-6.75 7-12c0-4-3-8-7-8zm0 10.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+        {/* 햄버거 */}
+        <button
+          onClick={onMenuClick}
+          style={{ width: 34, height: 34, borderRadius: '10px', backgroundColor: '#f2f6f2', border: 'none', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+          aria-label="메뉴"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="3" y1="6" x2="21" y2="6"/>
+            <line x1="3" y1="12" x2="21" y2="12"/>
+            <line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
-        </span>
+        </button>
         <span style={{ fontFamily: "'Noto Serif KR','Noto Serif',Georgia,serif", fontSize: '16px', fontWeight: 700, color: '#1a2e1a', letterSpacing: '-0.01em' }}>
           Daily Schedule
         </span>
       </div>
-      <button style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: '#f2f6f2', display: 'flex', alignItems: 'center', justifyContent: 'center', border: 'none', cursor: 'pointer', color: '#436440' }} aria-label="설정">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="12" cy="12" r="3"/>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="white" stroke="none">
+          <path d="M12 2C8 2 5 6 5 10c0 5.25 7 12 7 12s7-6.75 7-12c0-4-3-8-7-8zm0 10.5a2.5 2.5 0 1 1 0-5 2.5 2.5 0 0 1 0 5z"/>
         </svg>
-      </button>
+      </div>
     </div>
   );
 }
 
 // ─── 루트 앱 ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab,     setActiveTab]     = useState('home');
-  const [detailItem,    setDetailItem]    = useState(null);
-  const [detailVisible, setDetailVisible] = useState(false);
+  const [trips,        setTrips]        = useState(loadTrips);
+  const [activeId,     setActiveId]     = useState(() => loadActiveId(loadTrips()));
+  const [drawerOpen,   setDrawerOpen]   = useState(false);
+  const [activeTab,    setActiveTab]    = useState('home');
+  const [detailItem,   setDetailItem]   = useState(null);
+  const [detailVisible,setDetailVisible]= useState(false);
+
+  const activeTrip = trips.find(t => t.id === activeId) || trips[0] || {};
+
+  const handleSelectTrip = (id) => {
+    setActiveId(id);
+    saveActiveId(id);
+  };
 
   const openDetail = (item) => {
     setDetailItem(item);
@@ -58,18 +75,47 @@ export default function App() {
         borderRadius: isDesktop ? '40px' : '0',
       }}>
         {/* 앱 바 */}
-        <AppBar />
+        <AppBar onMenuClick={() => setDrawerOpen(true)} />
         <div style={{ height: 1, backgroundColor: '#f0f0ee', flexShrink: 0 }} />
 
         {/* 탭 콘텐츠 */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fafaf8' }}>
-          {activeTab === 'home'     && <HomeTab />}
-          {activeTab === 'schedule' && <DailyScheduleTab onSelectItem={openDetail} />}
-          {activeTab === 'budget'   && <BudgetTab />}
+          {activeTab === 'home' && (
+            <HomeTab
+              trip={activeTrip}
+              scheduleSheetId={activeTrip.scheduleSheetId}
+              scheduleGid={activeTrip.scheduleGid}
+              expenseSheetId={activeTrip.expenseSheetId}
+              expenseGid={activeTrip.expenseGid}
+            />
+          )}
+          {activeTab === 'schedule' && (
+            <DailyScheduleTab
+              sheetId={activeTrip.scheduleSheetId}
+              gid={activeTrip.scheduleGid}
+              onSelectItem={openDetail}
+            />
+          )}
+          {activeTab === 'budget' && (
+            <BudgetTab
+              sheetId={activeTrip.expenseSheetId}
+              expenseGid={activeTrip.expenseGid}
+            />
+          )}
         </div>
 
         {/* 하단 네비게이션 */}
         <BottomNav activeTab={activeTab} onChange={setActiveTab} />
+
+        {/* ── 드로어 ── */}
+        <Drawer
+          open={drawerOpen}
+          onClose={() => setDrawerOpen(false)}
+          trips={trips}
+          activeId={activeId}
+          onSelect={handleSelectTrip}
+          onTripsChange={setTrips}
+        />
 
         {/* ── 상세 페이지 (슬라이드 오버레이) ── */}
         {detailItem && (
