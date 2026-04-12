@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import HomeTab from './components/HomeTab.jsx';
 import DailyScheduleTab from './components/DailyScheduleTab.jsx';
 import DetailPage from './components/DetailPage.jsx';
 import BottomNav from './components/BottomNav.jsx';
@@ -28,37 +29,20 @@ function AppBar() {
   );
 }
 
-function PlaceholderTab({ label, icon }) {
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center gap-3 text-center px-8">
-      <div style={{ width: 60, height: 60, backgroundColor: '#f2f6f2', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        {icon}
-      </div>
-      <div>
-        <p className="font-semibold text-gray-700">{label} 탭</p>
-        <p className="text-sm text-gray-400 mt-1">곧 출시 예정이에요</p>
-      </div>
-    </div>
-  );
-}
-
 // ─── 루트 앱 ─────────────────────────────────────────────────────────────────
 export default function App() {
-  const [activeTab,   setActiveTab]   = useState('schedule');
-  const [detailItem,  setDetailItem]  = useState(null);   // null = 목록, item = 상세 페이지
+  const [activeTab,     setActiveTab]     = useState('home');
+  const [detailItem,    setDetailItem]    = useState(null);
   const [detailVisible, setDetailVisible] = useState(false);
 
-  // 상세 페이지 열기 (슬라이드 인)
   const openDetail = (item) => {
     setDetailItem(item);
-    // 다음 프레임에 visible=true로 → CSS transition 트리거
     requestAnimationFrame(() => requestAnimationFrame(() => setDetailVisible(true)));
   };
 
-  // 상세 페이지 닫기 (슬라이드 아웃)
   const closeDetail = () => {
     setDetailVisible(false);
-    setTimeout(() => setDetailItem(null), 280); // transition 완료 후 언마운트
+    setTimeout(() => setDetailItem(null), 280);
   };
 
   const isDesktop = typeof window !== 'undefined' && window.innerWidth > 480;
@@ -79,18 +63,9 @@ export default function App() {
 
         {/* 탭 콘텐츠 */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', backgroundColor: '#fafaf8' }}>
-          {activeTab === 'schedule' && (
-            <DailyScheduleTab onSelectItem={openDetail} />
-          )}
-          {activeTab === 'map' && (
-            <PlaceholderTab label="지도" icon={
-              <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#436440" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/>
-                <line x1="9" y1="3" x2="9" y2="18"/><line x1="15" y1="6" x2="15" y2="21"/>
-              </svg>
-            } />
-          )}
-          {activeTab === 'budget' && <BudgetTab />}
+          {activeTab === 'home'     && <HomeTab />}
+          {activeTab === 'schedule' && <DailyScheduleTab onSelectItem={openDetail} />}
+          {activeTab === 'budget'   && <BudgetTab />}
         </div>
 
         {/* 하단 네비게이션 */}

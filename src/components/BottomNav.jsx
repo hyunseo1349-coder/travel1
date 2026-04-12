@@ -1,5 +1,14 @@
 // 하단 네비게이션 바
 
+function IconHome() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+      <polyline points="9 22 9 12 15 12 15 22"/>
+    </svg>
+  );
+}
+
 function IconSchedule() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -15,16 +24,6 @@ function IconSchedule() {
   );
 }
 
-function IconMap() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21" />
-      <line x1="9" y1="3" x2="9" y2="18" />
-      <line x1="15" y1="6" x2="15" y2="21" />
-    </svg>
-  );
-}
-
 function IconBudget() {
   return (
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -36,12 +35,12 @@ function IconBudget() {
 }
 
 const TABS = [
+  { id: 'home',     label: '홈',  Icon: IconHome },
   { id: 'schedule', label: '일정', Icon: IconSchedule },
-  { id: 'map',      label: '지도', Icon: IconMap },
   { id: 'budget',   label: '예산', Icon: IconBudget },
 ];
 
-export default function BottomNav({ activeTab = 'schedule', onChange }) {
+export default function BottomNav({ activeTab = 'home', onChange }) {
   return (
     <div
       className="safe-bottom"
@@ -78,7 +77,6 @@ export default function BottomNav({ activeTab = 'schedule', onChange }) {
               aria-label={label}
             >
               {active ? (
-                /* 활성 탭: 그린 필 배경 */
                 <span
                   style={{
                     display: 'inline-flex',
