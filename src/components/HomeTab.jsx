@@ -177,8 +177,8 @@ function detectWeatherCity(days, todayIdx) {
 }
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
-// 알프스 직접 Unsplash 사진 (fallback: picsum seed)
-const ALPS_PHOTO = 'https://images.unsplash.com/photo-1531366936337-7c912a4589a7?w=800&h=450&fit=crop&q=80';
+// 맑은날 알프스 사진 (Unsplash – Swiss Alps panoramic, clear blue sky)
+const ALPS_PHOTO = 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&h=450&fit=crop&q=80';
 
 function HeroSection({ trip, days, tripId }) {
   const [cropFile,  setCropFile]  = useState(null);

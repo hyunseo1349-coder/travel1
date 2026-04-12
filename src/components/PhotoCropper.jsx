@@ -64,11 +64,16 @@ export default function PhotoCropper({ imageFile, onConfirm, onCancel }) {
     const ctx = canvas.getContext('2d');
     const img = imgRef.current;
     if (!img) return;
-    // 컨테이너 크기 (모바일 390px 기준 16:9 = 390×219)
-    const ratio = 800 / 390;
+    // 미리보기 컨테이너 너비 390px, canvas 800px → 동일 16:9 비율
+    const containerW = 390;
+    const ratio = canvas.width / containerW; // 800/390
+    // CSS width:100% 로 이미지가 컨테이너 폭에 맞게 축소되는 배율
+    const displayScale = img.naturalWidth ? containerW / img.naturalWidth : 1;
+    // 최종 배율: 미리보기 축소 × 사용자 조작 scale × canvas/preview 비율
+    const totalScale = displayScale * scale * ratio;
     ctx.save();
-    ctx.translate(400 + offset.x * ratio, 225 + offset.y * ratio);
-    ctx.scale(scale, scale);
+    ctx.translate(canvas.width / 2 + offset.x * ratio, canvas.height / 2 + offset.y * ratio);
+    ctx.scale(totalScale, totalScale);
     ctx.drawImage(img, -img.naturalWidth / 2, -img.naturalHeight / 2);
     ctx.restore();
     onConfirm(canvas.toDataURL('image/jpeg', 0.92));
