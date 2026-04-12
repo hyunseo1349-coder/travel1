@@ -6,8 +6,16 @@ import BottomNav from './components/BottomNav.jsx';
 import BudgetTab from './components/BudgetTab.jsx';
 import Drawer, { loadTrips, loadActiveId, saveActiveId } from './components/Drawer.jsx';
 
+// ─── 탭별 헤더 타이틀 ────────────────────────────────────────────────────────
+const TAB_TITLES = {
+  home:     'Summary',
+  schedule: 'Daily Schedule',
+  budget:   'Expense',
+};
+
 // ─── 앱 상단 바 ──────────────────────────────────────────────────────────────
-function AppBar({ onMenuClick }) {
+function AppBar({ onMenuClick, activeTab }) {
+  const title = TAB_TITLES[activeTab] || 'Daily Schedule';
   return (
     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '48px 20px 12px', backgroundColor: '#fff' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -24,7 +32,7 @@ function AppBar({ onMenuClick }) {
           </svg>
         </button>
         <span style={{ fontFamily: "'Noto Serif KR','Noto Serif',Georgia,serif", fontSize: '16px', fontWeight: 700, color: '#1a2e1a', letterSpacing: '-0.01em' }}>
-          Daily Schedule
+          {title}
         </span>
       </div>
       <div style={{ width: 34, height: 34, borderRadius: '50%', backgroundColor: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -75,7 +83,7 @@ export default function App() {
         borderRadius: isDesktop ? '40px' : '0',
       }}>
         {/* 앱 바 */}
-        <AppBar onMenuClick={() => setDrawerOpen(true)} />
+        <AppBar onMenuClick={() => setDrawerOpen(true)} activeTab={activeTab} />
         <div style={{ height: 1, backgroundColor: '#f0f0ee', flexShrink: 0 }} />
 
         {/* 탭 콘텐츠 */}
