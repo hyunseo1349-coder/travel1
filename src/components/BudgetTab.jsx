@@ -102,7 +102,7 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
   const today = new Date().toISOString().slice(0,10);
   const [form, setForm] = useState({
     date: today, country:'', item:'', category:'기타',
-    currency:'KRW', amount:'', note:'', method:'',
+    currency:'KRW', amount:'', krwOverride:'', note:'', method:'',
   });
   const [showCatPicker, setShowCatPicker] = useState(false);
 
@@ -120,9 +120,14 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
     setForm(f => ({ ...f, item: val, category: autoCat }));
   };
 
-  const amountKRW = form.currency === 'KRW'
+  // 통화 변경 시 원화 오버라이드 초기화
+  const handleCurrency = (cur) => setForm(f => ({ ...f, currency: cur, krwOverride: '' }));
+
+  const autoKRW = form.currency === 'KRW'
     ? Number(form.amount) || 0
     : Math.round((Number(form.amount) || 0) * (rates[form.currency] || DEFAULT_RATES[form.currency] || 1));
+
+  const amountKRW = form.krwOverride !== '' ? Number(form.krwOverride) : autoKRW;
 
   const handleSubmit = () => {
     if (!form.item || !form.amount) return;
@@ -181,9 +186,9 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
 
         {/* 통화 + 금액 */}
         <div style={{ marginBottom:'12px' }}>
-          <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>통화 · 금액</p>
+          <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>통화 · 현지 금액</p>
           <div style={{ display:'flex', gap:'8px' }}>
-            <select value={form.currency} onChange={e=>setForm(f=>({...f,currency:e.target.value}))}
+            <select value={form.currency} onChange={e=>handleCurrency(e.target.value)}
               style={{ padding:'10px 8px', borderRadius:'12px', border:'1.5px solid #e5e7eb', fontSize:'14px', color:'#111827', background:'#fafaf8', cursor:'pointer' }}>
               {CURRENCIES.map(c => <option key={c}>{c}</option>)}
             </select>
@@ -192,10 +197,22 @@ function AddExpenseModal({ rates, onAdd, onClose }) {
               style={{ flex:1, padding:'10px 12px', borderRadius:'12px', border:'1.5px solid #e5e7eb', fontSize:'14px', color:'#111827', outline:'none', background:'#fafaf8' }}
             />
           </div>
-          {form.currency !== 'KRW' && form.amount > 0 && (
-            <p style={{ fontSize:'11px', color:'#9ca3af', margin:'4px 0 0' }}>≈ {fmtKRW(amountKRW)}</p>
-          )}
         </div>
+
+        {/* 원화 환산 금액 (외화일 때만) */}
+        {form.currency !== 'KRW' && (
+          <div style={{ marginBottom:'12px' }}>
+            <p style={{ fontSize:'11px', fontWeight:600, color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase', letterSpacing:'0.08em' }}>원화 환산 금액</p>
+            <input type="number" value={form.krwOverride !== '' ? form.krwOverride : (autoKRW || '')}
+              placeholder={autoKRW ? String(autoKRW) : '자동 계산'}
+              onChange={e => setForm(f=>({...f, krwOverride: e.target.value}))}
+              style={{ width:'100%', padding:'10px 12px', borderRadius:'12px', border:'1.5px solid #e5e7eb', fontSize:'14px', color:'#111827', outline:'none', boxSizing:'border-box', background:'#fafaf8' }}
+            />
+            {form.krwOverride === '' && autoKRW > 0 && (
+              <p style={{ fontSize:'11px', color:'#9ca3af', margin:'4px 0 0' }}>환율 자동 적용: {fmtKRW(autoKRW)}</p>
+            )}
+          </div>
+        )}
 
         {inp('결제 수단','method','text','예: 신한카드')}
         {inp('메모','note','text','')}
@@ -450,14 +467,14 @@ export default function BudgetTab() {
   return (
     <div style={{ flex:1, overflowY:'auto', backgroundColor:'#fafaf8' }} className="scrollbar-hide">
 
-      {/* ── 상단 요약 카드 (연한 톤) ── */}
+      {/* ── 상단 요약 카드 ── */}
       <div style={{ margin:'14px 16px 10px', display:'flex', gap:'10px' }}>
-        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#eef4ee', padding:'14px 16px' }}>
-          <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'#5a8a57', margin:'0 0 4px', textTransform:'uppercase' }}>총 지출</p>
-          <p style={{ fontSize:'20px', fontWeight:800, margin:0, color:'#1a2e1a', letterSpacing:'-0.02em', lineHeight:1.2 }}>
+        <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#436440', padding:'14px 16px' }}>
+          <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'rgba(255,255,255,0.7)', margin:'0 0 4px', textTransform:'uppercase' }}>총 지출</p>
+          <p style={{ fontSize:'20px', fontWeight:800, margin:0, color:'#fff', letterSpacing:'-0.02em', lineHeight:1.2 }}>
             {fmtKRW(totalKRW)}
           </p>
-          <p style={{ fontSize:'10px', color:'#8faa8d', margin:'4px 0 0' }}>{allExpenses.length}건</p>
+          <p style={{ fontSize:'10px', color:'rgba(255,255,255,0.55)', margin:'4px 0 0' }}>{allExpenses.length}건</p>
         </div>
         <div style={{ flex:1, borderRadius:'18px', backgroundColor:'#fff', padding:'14px 16px', boxShadow:'0 2px 10px rgba(67,100,64,0.07)' }}>
           <p style={{ fontSize:'10px', fontWeight:700, letterSpacing:'0.1em', color:'#8faa8d', margin:'0 0 4px', textTransform:'uppercase' }}>오늘 지출</p>
