@@ -94,7 +94,7 @@ export default function SettingsTab({ activeThemeId, onThemeChange, activeTrip }
       <div style={{ backgroundColor: '#fff', marginBottom: 8 }}>
         <SectionTitle sub="현재 여행에만 적용돼요">Color Theme</SectionTitle>
         <div style={{ padding: '0 20px 20px' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16 }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 12 }}>
             {THEME_ORDER.map(id => {
               const t = THEMES[id];
               const active = activeThemeId === id;
@@ -102,24 +102,24 @@ export default function SettingsTab({ activeThemeId, onThemeChange, activeTrip }
                 <button
                   key={id}
                   onClick={() => onThemeChange(id)}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 8 }}
+                  style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 5 }}
                 >
                   <div style={{
-                    width: 52, height: 52, borderRadius: '50%',
+                    width: 34, height: 34, borderRadius: '50%',
                     backgroundColor: t.primary,
-                    outline: active ? `2.5px solid ${t.primary}` : '2.5px solid transparent',
-                    outlineOffset: 3,
+                    outline: active ? `2px solid ${t.primary}` : '2px solid transparent',
+                    outlineOffset: 2,
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    boxShadow: active ? `0 4px 16px rgba(${t.primaryRgb},0.4)` : '0 2px 8px rgba(0,0,0,0.10)',
+                    boxShadow: active ? `0 3px 10px rgba(${t.primaryRgb},0.45)` : '0 1px 4px rgba(0,0,0,0.12)',
                     transition: 'all 0.15s',
                   }}>
                     {active && (
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
                         <polyline points="20 6 9 17 4 12"/>
                       </svg>
                     )}
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: active ? 700 : 500, color: active ? t.primary : '#6b7280' }}>
+                  <span style={{ fontSize: 9, fontWeight: active ? 700 : 400, color: active ? t.primary : '#9ca3af' }}>
                     {t.name}
                   </span>
                 </button>
