@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react';
-import { getActivityIcon, getIconByName, ICON_CATALOG } from './ActivityIcon.jsx';
+import { getActivityIcon } from './ActivityIcon.jsx';
 import PhotoCropper from './PhotoCropper.jsx';
 
 // ─── 카테고리별 폴백 그라디언트 (Unsplash 실패 시) ─────────────────────────
@@ -36,49 +36,135 @@ function getCategory(scheduleName, content) {
   return 'pin';
 }
 
-// 일정명 + 장소 → Unsplash 검색 키워드
 function buildPhotoQuery(schedule, content) {
   const q = [schedule, content].filter(Boolean).join(' ');
   return encodeURIComponent(q.slice(0, 80));
 }
 
-// localStorage 키 (사진 저장)
+// ─── localStorage: 사진 ──────────────────────────────────────────────────────
 const PHOTO_KEY = 'journey-photos';
-function loadPhoto(id)         { try { return JSON.parse(localStorage.getItem(PHOTO_KEY) || '{}')[id] || null; } catch { return null; } }
-function savePhoto(id, dataUrl){ try { const m = JSON.parse(localStorage.getItem(PHOTO_KEY) || '{}'); m[id] = dataUrl; localStorage.setItem(PHOTO_KEY, JSON.stringify(m)); } catch {} }
+function loadPhoto(id)          { try { return JSON.parse(localStorage.getItem(PHOTO_KEY) || '{}')[id] || null; } catch { return null; } }
+function savePhoto(id, dataUrl) { try { const m = JSON.parse(localStorage.getItem(PHOTO_KEY) || '{}'); m[id] = dataUrl; localStorage.setItem(PHOTO_KEY, JSON.stringify(m)); } catch {} }
 
-// ─── 상세 필드 행 ────────────────────────────────────────────────────────────
-const IcoDoc  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
-const IcoTip  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
-const IcoLink = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>;
-const IcoAlt  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>;
-const IcoWon  = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
-const IcoNote = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
+// ─── localStorage: 필드 편집 ─────────────────────────────────────────────────
+const EDITS_KEY = 'journey-field-edits';
+function loadEdits(key)        { try { return JSON.parse(localStorage.getItem(EDITS_KEY) || '{}')[key] || {}; } catch { return {}; } }
+function saveEdits(key, edits) { try { const all = JSON.parse(localStorage.getItem(EDITS_KEY) || '{}'); all[key] = edits; localStorage.setItem(EDITS_KEY, JSON.stringify(all)); } catch {} }
+
+// ─── Apps Script URL ─────────────────────────────────────────────────────────
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzJnBj1Yj1hD-fMGmjQF-RpBLygL9RczdMMS4olLP97yYyQrfY6PObiwtgr-8bTyv25pQ/exec';
+
+// ─── 상세 필드 아이콘 ─────────────────────────────────────────────────────────
+const IcoDoc    = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>;
+const IcoTip    = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>;
+const IcoLink   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>;
+const IcoAlt    = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>;
+const IcoWon    = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>;
+const IcoNote   = () => <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>;
+const IcoPencil = () => <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>;
 
 const FIELD_ICONS = { content: IcoDoc, detail: IcoDoc, tip: IcoTip, link: IcoLink, alt: IcoAlt, amount: IcoWon, note: IcoNote };
 
-function FieldRow({ field }) {
-  if (!field.value) return null;
+// ─── 상세 필드 행 (편집 가능) ─────────────────────────────────────────────────
+function FieldRow({ field, editValue, onSave }) {
+  const [editing, setEditing] = useState(false);
+  const [draft,   setDraft]   = useState('');
+  const [saving,  setSaving]  = useState(false);
+
+  // 로컬 편집값 우선, 없으면 시트 원본값
+  const displayValue = (editValue !== undefined && editValue !== '') ? editValue : field.value;
   const Icon = FIELD_ICONS[field.key] || IcoDoc;
+
+  const handleEdit = () => { setDraft(displayValue || ''); setEditing(true); };
+  const handleCancel = () => setEditing(false);
+  const handleSave = async () => {
+    setSaving(true);
+    await onSave(field.key, draft);
+    setSaving(false);
+    setEditing(false);
+  };
+
+  // 값 없고 편집 중 아니면 → 흐린 "입력..." 플레이스홀더
+  if (!displayValue && !editing) {
+    return (
+      <div
+        onClick={handleEdit}
+        style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+      >
+        <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f9faf9', color: '#c5d6c4', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Icon />
+        </div>
+        <p style={{ fontSize: '13px', color: '#c5d6c4', margin: 0 }}>{field.label} 입력...</p>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', gap: '12px', alignItems: 'flex-start', padding: '14px 0', borderBottom: '1px solid #f3f4f6' }}>
       <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f2f6f2', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
         <Icon />
       </div>
       <div style={{ flex: 1, minWidth: 0 }}>
-        <p style={{ fontSize: '10px', fontWeight: 700, color: '#8faa8d', textTransform: 'uppercase', letterSpacing: '0.1em', margin: '0 0 4px' }}>
-          {field.label}
-        </p>
-        {field.type === 'link' ? (
-          <a href={field.value.startsWith('http') ? field.value : `https://${field.value}`}
-            target="_blank" rel="noopener noreferrer"
-            style={{ fontSize: '14px', color: '#436440', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5' }}>
-            {field.value}
-          </a>
-        ) : (
-          <p style={{ fontSize: '14px', color: '#1f2937', lineHeight: '1.6', wordBreak: 'keep-all', margin: 0, whiteSpace: 'pre-wrap' }}>
-            {field.value}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: editing ? '8px' : '4px' }}>
+          <p style={{ fontSize: '10px', fontWeight: 700, color: '#8faa8d', textTransform: 'uppercase', letterSpacing: '0.1em', margin: 0 }}>
+            {field.label}
           </p>
+          {!editing && (
+            <button
+              onClick={handleEdit}
+              style={{ width: 28, height: 28, borderRadius: '8px', backgroundColor: '#f2f6f2', border: 'none', color: '#436440', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', flexShrink: 0 }}
+              aria-label="편집"
+            >
+              <IcoPencil />
+            </button>
+          )}
+        </div>
+
+        {editing ? (
+          <div>
+            <textarea
+              value={draft}
+              onChange={e => setDraft(e.target.value)}
+              autoFocus
+              rows={3}
+              style={{
+                width: '100%', boxSizing: 'border-box',
+                padding: '10px 12px', borderRadius: '10px',
+                border: '1.5px solid #436440', fontSize: '14px', lineHeight: '1.6',
+                color: '#1f2937', resize: 'vertical', outline: 'none',
+                fontFamily: 'inherit', backgroundColor: '#fafdf9',
+              }}
+            />
+            <div style={{ display: 'flex', gap: '8px', marginTop: '8px', justifyContent: 'flex-end' }}>
+              <button
+                onClick={handleCancel}
+                style={{ padding: '6px 14px', borderRadius: '8px', border: '1px solid #e5e7eb', backgroundColor: '#fff', color: '#6b7280', fontSize: '13px', fontWeight: 500, cursor: 'pointer' }}
+              >
+                취소
+              </button>
+              <button
+                onClick={handleSave}
+                disabled={saving}
+                style={{ padding: '6px 14px', borderRadius: '8px', border: 'none', backgroundColor: '#436440', color: '#fff', fontSize: '13px', fontWeight: 600, cursor: saving ? 'default' : 'pointer', opacity: saving ? 0.7 : 1 }}
+              >
+                {saving ? '저장 중...' : '저장'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          field.type === 'link' ? (
+            <a
+              href={displayValue.startsWith('http') ? displayValue : `https://${displayValue}`}
+              target="_blank" rel="noopener noreferrer"
+              style={{ fontSize: '14px', color: '#436440', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5' }}
+            >
+              {displayValue}
+            </a>
+          ) : (
+            <p style={{ fontSize: '14px', color: '#1f2937', lineHeight: '1.6', wordBreak: 'keep-all', margin: 0, whiteSpace: 'pre-wrap' }}>
+              {displayValue}
+            </p>
+          )
         )}
       </div>
     </div>
@@ -94,6 +180,31 @@ export default function DetailPage({ item, onBack }) {
   const [cropFile,    setCropFile]    = useState(null);
   const [imgError,    setImgError]    = useState(false);
   const fileInputRef = useRef();
+
+  // 필드 편집: 날짜+일정명을 안정적인 키로 사용
+  const editKey = `${item.date || ''}:${item.schedule || ''}`;
+  const [fieldEdits, setFieldEdits] = useState(() => loadEdits(editKey));
+
+  const handleSaveField = async (fieldKey, value) => {
+    const newEdits = { ...fieldEdits, [fieldKey]: value };
+    setFieldEdits(newEdits);
+    saveEdits(editKey, newEdits);
+    // 구글 시트 동기화
+    try {
+      await fetch(SCRIPT_URL, {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'updateSchedule',
+          date: item.date,
+          schedule: item.schedule,
+          fieldKey,
+          value,
+        }),
+      });
+    } catch {}
+  };
 
   // 일정명+장소 기반 Unsplash 키워드 검색 사진
   const autoPhotoUrl = `https://source.unsplash.com/featured/800x450?${buildPhotoQuery(item.schedule, item.content)}`;
@@ -114,9 +225,8 @@ export default function DetailPage({ item, onBack }) {
   const timeParts = item.time ? item.time.split(/[-~]/).map(t => t.trim()).filter(Boolean) : [];
   const timeLabel = timeParts.length >= 2 ? `${timeParts[0]} → ${timeParts[timeParts.length - 1]}` : (timeParts[0] || '');
 
-  // orderedFields에서 content 제외 (카드 부제목으로 이미 표시)
-  // 기본 내용(content) 제외하고 나머지에 값 있는지 확인
-  const hasAnyField = item.orderedFields?.some(f => f.key !== 'content' && f.value);
+  // content 제외한 편집 가능 필드 목록
+  const nonContentFields = item.orderedFields?.filter(f => f.key !== 'content') || [];
 
   return (
     <>
@@ -172,7 +282,6 @@ export default function DetailPage({ item, onBack }) {
               onError={() => setImgError(true)}
             />
           ) : (
-            /* 사진 로드 실패 시 카테고리 그라디언트 */
             <div style={{ width: '100%', height: '100%', background: fallbackGrad, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <span style={{ fontSize: '48px', opacity: 0.6 }}>📍</span>
             </div>
@@ -209,24 +318,21 @@ export default function DetailPage({ item, onBack }) {
           <div style={{ height: 1, backgroundColor: '#f0f0ee', margin: '16px 0 0' }} />
         </div>
 
-        {/* ── 상세 필드 (시트 열 순서, 기본 내용 제외) ── */}
+        {/* ── 상세 필드 (편집 가능) ── */}
         <div style={{ backgroundColor: '#fff', padding: '0 20px 32px' }}>
-          {hasAnyField ? (
-            item.orderedFields
-              ?.filter(f => f.key !== 'content')          // 기본 내용 제외
-              .map(field => (
-                <FieldRow
-                  key={field.key}
-                  field={field.key === 'detail'
-                    ? { ...field, label: '설명' }          // 상세 내용 → 설명
-                    : field
-                  }
-                />
-              ))
-          ) : (
+          {nonContentFields.length === 0 ? (
             <p style={{ color: '#9ca3af', fontSize: '14px', paddingTop: '24px', textAlign: 'center' }}>
               추가 정보가 없어요
             </p>
+          ) : (
+            nonContentFields.map(field => (
+              <FieldRow
+                key={field.key}
+                field={field.key === 'detail' ? { ...field, label: '설명' } : field}
+                editValue={fieldEdits[field.key]}
+                onSave={handleSaveField}
+              />
+            ))
           )}
         </div>
       </div>

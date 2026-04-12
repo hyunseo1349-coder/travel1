@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useGoogleSheets, findTodayIndex } from '../hooks/useGoogleSheets.js';
 import ScheduleItem from './ScheduleItem.jsx';
 import SkeletonLoader from './SkeletonLoader.jsx';
-import DayMap from './DayMap.jsx';
 
 // ─── 날짜 레이블 "SEP 27 - 토" ──────────────────────────────────────────────
 const MONTH_ABBR = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
@@ -179,9 +178,6 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem }) {
           <p className="text-xs text-gray-400 whitespace-nowrap">총 {day.items.length}개 일정</p>
           <div className="flex-1 h-px bg-gray-200" />
         </div>
-
-        {/* 오늘의 동선 지도 */}
-        <DayMap items={day.items} />
       </div>
     </>
   );
