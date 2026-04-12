@@ -602,9 +602,9 @@ export default function HomeTab({ trip, scheduleSheetId, scheduleGid, expenseShe
 
       <HeroSection trip={trip} days={days} tripId={tripId} />
 
-      <div style={{ display:'flex', flexDirection:'column', gap:'8px', paddingBottom:'80px' }}>
+      <div style={{ display:'flex', flexDirection:'column', gap:'0', paddingBottom:'80px', backgroundColor:'#fff' }}>
         <TripAtAGlance days={days} expenses={expenses} />
-        <div style={{ padding:'12px 16px', backgroundColor:'#fff' }}>
+        <div style={{ padding:'8px 16px 12px' }}>
           <WeatherCard days={days} todayIdx={todayIdx} tripId={tripId} />
         </div>
         {days.length > 0 && <ItinerarySummary days={days} expenses={expenses} />}
