@@ -165,13 +165,18 @@ function FieldRow({ field, editValue, onSave }) {
           </div>
         ) : (
           field.type === 'link' ? (
-            <a
-              href={displayValue.startsWith('http') ? displayValue : `https://${displayValue}`}
-              target="_blank" rel="noopener noreferrer"
-              style={{ fontSize: '14px', color: 'var(--cp, #436440)', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5' }}
-            >
-              {displayValue}
-            </a>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {displayValue.split(/\n+/).filter(u => u.trim()).map((url, i) => (
+                <a
+                  key={i}
+                  href={url.trim().startsWith('http') ? url.trim() : `https://${url.trim()}`}
+                  target="_blank" rel="noopener noreferrer"
+                  style={{ fontSize: '14px', color: 'var(--cp, #436440)', textDecoration: 'underline', wordBreak: 'break-all', lineHeight: '1.5', display: 'block' }}
+                >
+                  {url.trim()}
+                </a>
+              ))}
+            </div>
           ) : (
             <p style={{ fontSize: '14px', color: '#1f2937', lineHeight: '1.6', wordBreak: 'keep-all', margin: 0, whiteSpace: 'pre-wrap' }}>
               {displayValue}
