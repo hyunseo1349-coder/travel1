@@ -117,6 +117,18 @@ export default function App() {
     setTimeout(() => setDetailItem(null), 280);
   };
 
+  // 모바일 뒤로가기: 상세 페이지 열릴 때 history 스택 추가
+  useEffect(() => {
+    if (!detailItem) return;
+    history.pushState(null, document.title);
+    const handlePop = () => {
+      setDetailVisible(false);
+      setTimeout(() => setDetailItem(null), 280);
+    };
+    window.addEventListener('popstate', handlePop);
+    return () => window.removeEventListener('popstate', handlePop);
+  }, [detailItem]); // eslint-disable-line react-hooks/exhaustive-deps
+
   const isDesktop = typeof window !== 'undefined' && window.innerWidth > 480;
 
   return (

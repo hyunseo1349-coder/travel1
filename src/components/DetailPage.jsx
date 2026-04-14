@@ -96,17 +96,17 @@ function FieldRow({ field, editValue, onSave }) {
     setEditing(false);
   };
 
-  // 값 없고 편집 중 아니면 → 흐린 "입력..." 플레이스홀더
+  // 값 없고 편집 중 아니면 → 흐린 "내용 없음" (채워진 항목 아래 표시됨)
   if (!displayValue && !editing) {
     return (
       <div
         onClick={handleEdit}
-        style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f3f4f6', cursor: 'pointer' }}
+        style={{ display: 'flex', gap: '12px', alignItems: 'center', padding: '10px 0', borderBottom: '1px solid #f3f4f6', cursor: 'pointer', opacity: 0.35 }}
       >
-        <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f9faf9', color: 'var(--cl, #dff0db)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+        <div style={{ width: 32, height: 32, borderRadius: '10px', backgroundColor: '#f9faf9', color: '#9ca3af', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
           <Icon />
         </div>
-        <p style={{ fontSize: '13px', color: 'var(--cl, #dff0db)', margin: 0 }}>{field.label} 입력...</p>
+        <p style={{ fontSize: '13px', color: '#6b7280', margin: 0 }}>{field.label} · 내용 없음</p>
       </div>
     );
   }
@@ -239,8 +239,12 @@ export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
   const timeParts = item.time ? item.time.split(/[-~]/).map(t => t.trim()).filter(Boolean) : [];
   const timeLabel = timeParts.length >= 2 ? `${timeParts[0]} → ${timeParts[timeParts.length - 1]}` : (timeParts[0] || '');
 
-  // content 제외한 편집 가능 필드 목록
-  const nonContentFields = item.orderedFields?.filter(f => f.key !== 'content') || [];
+  // content 제외한 편집 가능 필드 목록 — 내용 있는 항목 먼저
+  const rawNonContent = item.orderedFields?.filter(f => f.key !== 'content') || [];
+  const nonContentFields = [
+    ...rawNonContent.filter(f => (fieldEdits[f.key] || f.value)),
+    ...rawNonContent.filter(f => !(fieldEdits[f.key] || f.value)),
+  ];
 
   return (
     <>
@@ -329,10 +333,9 @@ export default function DetailPage({ item, onBack, scriptUrl, sheetId, gid }) {
                 <a
                   href={`https://maps.google.com/maps?q=${encodeURIComponent(item.location)}`}
                   target="_blank" rel="noopener noreferrer"
-                  style={{ display:'inline-flex', alignItems:'center', gap:'4px', marginTop:'6px', padding:'4px 10px', borderRadius:'999px', backgroundColor:'var(--ci, #edf4ec)', textDecoration:'none', color:'var(--cp, #436440)', fontSize:'12px', fontWeight:500 }}
+                  style={{ display:'block', marginTop:'6px', marginBottom:'2px', padding:'5px 12px', borderRadius:'999px', backgroundColor:'var(--ci, #edf4ec)', textDecoration:'none', color:'var(--cp, #436440)', fontSize:'12px', fontWeight:500, textAlign:'center' }}
                 >
-                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg>
-                  {item.location}
+                  📍 {item.location} 지도 열기
                 </a>
               )}
             </div>
