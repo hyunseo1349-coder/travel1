@@ -145,6 +145,27 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
   const { days, loading, error, fromCache, refetch } = useGoogleSheets(sheetId, gid);
   const [currentIndex, setCurrentIndex] = useState(0);
 
+  // ─── 좌우 스와이프로 일차 이동 ────────────────────────────────────────────
+  const swipeStartX = useRef(null);
+  const swipeStartY = useRef(null);
+
+  const onTouchStart = (e) => {
+    swipeStartX.current = e.touches[0].clientX;
+    swipeStartY.current = e.touches[0].clientY;
+  };
+
+  const onTouchEnd = (e) => {
+    if (swipeStartX.current === null) return;
+    const dx = e.changedTouches[0].clientX - swipeStartX.current;
+    const dy = e.changedTouches[0].clientY - swipeStartY.current;
+    swipeStartX.current = null;
+    swipeStartY.current = null;
+    // 수평 이동이 50px 이상이고 수직보다 클 때만 처리
+    if (Math.abs(dx) < 50 || Math.abs(dx) <= Math.abs(dy)) return;
+    if (dx < 0) setCurrentIndex(i => Math.min(days.length - 1, i + 1)); // 왼쪽 → 다음
+    else        setCurrentIndex(i => Math.max(0, i - 1));                // 오른쪽 → 이전
+  };
+
   // 탭 전환 시 자동 새로고침
   useEffect(() => {
     if (active) refetch();
@@ -168,7 +189,7 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
   const day = days[safeIndex];
 
   return (
-    <>
+    <div style={{ display: 'contents' }} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
       {fromCache && <OfflineBanner />}
       <DayTabBar days={days} currentIndex={safeIndex} onChange={setCurrentIndex} />
       <DayHeader
@@ -202,6 +223,6 @@ export default function DailyScheduleTab({ sheetId, gid, onSelectItem, active })
           <div className="flex-1 h-px bg-gray-200" />
         </div>
       </div>
-    </>
+    </div>
   );
 }
