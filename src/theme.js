@@ -56,6 +56,9 @@ export function applyTheme(themeId) {
   r.style.setProperty('--cc',     t.cellBg);
   r.style.setProperty('--ci',     t.iconBg);
   localStorage.setItem(THEME_KEY, themeId);
+  // 브라우저/PWA 상단 바 색상도 테마에 맞게 동기화
+  const metaTheme = document.querySelector('meta[name="theme-color"]');
+  if (metaTheme) metaTheme.setAttribute('content', t.primary);
 }
 
 export function loadThemeId() {
