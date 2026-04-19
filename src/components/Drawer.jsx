@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { parseShareUrl } from '../tripShare.js';
 
 // ─── localStorage ─────────────────────────────────────────────────────────────
 const TRIPS_KEY       = 'journey-trips';
@@ -136,9 +137,58 @@ function TripForm({ initial, onSave, onCancel, onDelete }) {
   );
 }
 
+// ─── 링크로 가져오기 모달 ─────────────────────────────────────────────────────
+function ImportModal({ trips, onImport, onCancel }) {
+  const [url,    setUrl]    = useState('');
+  const [status, setStatus] = useState(null); // null | 'ok' | 'dup' | 'err'
+
+  const handleImport = () => {
+    try {
+      const parsed = parseShareUrl(url.includes('?') ? url : `?${url.split('?').pop()}`);
+      if (!parsed?.scheduleSheetId) { setStatus('err'); return; }
+      const dup = trips.find(t =>
+        t.scheduleSheetId === parsed.scheduleSheetId &&
+        t.scheduleGid     === parsed.scheduleGid
+      );
+      if (dup) { setStatus('dup'); return; }
+      onImport({ ...parsed, id: `trip-${Date.now()}` });
+    } catch { setStatus('err'); }
+  };
+
+  return (
+    <div style={{ position: 'absolute', inset: 0, backgroundColor: 'rgba(0,0,0,0.5)', zIndex: 300, display: 'flex', alignItems: 'flex-end' }}>
+      <div style={{ width: '100%', backgroundColor: '#fff', borderRadius: '20px 20px 0 0', padding: '24px 20px 32px', display: 'flex', flexDirection: 'column', gap: '14px' }}>
+        <p style={{ fontSize: '16px', fontWeight: 700, color: '#1f2937', margin: 0, textAlign: 'center' }}>링크로 여행 추가</p>
+        <p style={{ fontSize: '13px', color: '#6b7280', margin: 0, textAlign: 'center', lineHeight: 1.5 }}>
+          공유받은 링크를 아래에 붙여넣으세요
+        </p>
+        <textarea
+          value={url}
+          onChange={e => { setUrl(e.target.value); setStatus(null); }}
+          placeholder="https://..."
+          rows={3}
+          autoFocus
+          style={{ width: '100%', boxSizing: 'border-box', padding: '10px 12px', borderRadius: '10px', border: '1.5px solid #e5e7eb', fontSize: '13px', fontFamily: 'inherit', resize: 'none', outline: 'none' }}
+        />
+        {status === 'err' && <p style={{ fontSize: '12px', color: '#ef4444', margin: '-6px 0 0', textAlign: 'center' }}>올바른 공유 링크가 아니에요.</p>}
+        {status === 'dup' && <p style={{ fontSize: '12px', color: '#f59e0b', margin: '-6px 0 0', textAlign: 'center' }}>이미 추가된 여행이에요.</p>}
+        <div style={{ display: 'flex', gap: '8px' }}>
+          <button onClick={onCancel} style={{ flex: 1, padding: '12px', borderRadius: '12px', border: '1.5px solid #e5e7eb', backgroundColor: '#fff', color: '#6b7280', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+            취소
+          </button>
+          <button onClick={handleImport} style={{ flex: 2, padding: '12px', borderRadius: '12px', border: 'none', backgroundColor: 'var(--cp, #436440)', color: '#fff', fontSize: '14px', fontWeight: 600, cursor: 'pointer' }}>
+            추가
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ─── 드로어 본체 ──────────────────────────────────────────────────────────────
 export default function Drawer({ open, onClose, trips, activeId, onSelect, onTripsChange }) {
-  const [editing, setEditing] = useState(null); // null | 'new' | trip
+  const [editing,    setEditing]    = useState(null); // null | 'new' | trip
+  const [importing,  setImporting]  = useState(false);
 
   // Level 1 그룹핑
   const groups = {};
@@ -155,6 +205,15 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
     saveTrips(updated);
     onTripsChange(updated);
     setEditing(null);
+  };
+
+  const handleImport = (data) => {
+    const updated = [...trips, data];
+    saveTrips(updated);
+    onTripsChange(updated);
+    onSelect(data.id);
+    setImporting(false);
+    onClose();
   };
 
   const handleDelete = (id) => {
@@ -229,13 +288,20 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
         </div>
 
         {/* 여행 추가 */}
-        <div style={{ padding: '10px 14px 24px', borderTop: '1px solid #f0f0ee' }}>
+        <div style={{ padding: '10px 14px 24px', borderTop: '1px solid #f0f0ee', display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <button
             onClick={() => setEditing('new')}
             style={{ width: '100%', padding: '11px', borderRadius: '12px', border: '1.5px dashed #d1d5db', backgroundColor: 'transparent', color: '#6b7280', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
           >
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
             여행 추가
+          </button>
+          <button
+            onClick={() => setImporting(true)}
+            style={{ width: '100%', padding: '11px', borderRadius: '12px', border: '1.5px solid var(--ci, #edf4ec)', backgroundColor: 'var(--ci, #edf4ec)', color: 'var(--cp, #436440)', fontSize: '13px', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '5px' }}
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+            링크로 추가
           </button>
         </div>
       </div>
@@ -247,6 +313,15 @@ export default function Drawer({ open, onClose, trips, activeId, onSelect, onTri
           onSave={handleSave}
           onCancel={() => setEditing(null)}
           onDelete={editing !== 'new' ? () => handleDelete(editing.id) : undefined}
+        />
+      )}
+
+      {/* 링크로 가져오기 */}
+      {importing && (
+        <ImportModal
+          trips={trips}
+          onImport={handleImport}
+          onCancel={() => setImporting(false)}
         />
       )}
     </>
