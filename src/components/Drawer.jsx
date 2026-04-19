@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { parseShareUrl } from '../tripShare.js';
 
 // ─── localStorage ─────────────────────────────────────────────────────────────
 const TRIPS_KEY       = 'journey-trips';
@@ -144,14 +143,26 @@ function ImportModal({ trips, onImport, onCancel }) {
 
   const handleImport = () => {
     try {
-      const parsed = parseShareUrl(url.includes('?') ? url : `?${url.split('?').pop()}`);
-      if (!parsed?.scheduleSheetId) { setStatus('err'); return; }
+      const qs = url.includes('?') ? url.split('?').slice(1).join('?') : url;
+      const p  = new URLSearchParams(qs);
+      const ss = p.get('ss');
+      if (!ss) { setStatus('err'); return; }
+      const imported = {
+        id:              `trip-${Date.now()}`,
+        level1:          p.get('y')  || new Date().getFullYear().toString(),
+        level2:          p.get('n')  || '새 여행',
+        scheduleSheetId: ss,
+        scheduleGid:     p.get('sg') || '0',
+        expenseSheetId:  p.get('es') || ss,
+        expenseGid:      p.get('eg') || '',
+        themeId:         p.get('t')  || 'emerald',
+      };
       const dup = trips.find(t =>
-        t.scheduleSheetId === parsed.scheduleSheetId &&
-        t.scheduleGid     === parsed.scheduleGid
+        t.scheduleSheetId === imported.scheduleSheetId &&
+        t.scheduleGid     === imported.scheduleGid
       );
       if (dup) { setStatus('dup'); return; }
-      onImport({ ...parsed, id: `trip-${Date.now()}` });
+      onImport(imported);
     } catch { setStatus('err'); }
   };
 
